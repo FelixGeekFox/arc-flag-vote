@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Relationship Community Flag Vote</title>
+  <meta name="description" content="The AI Relationship Community is choosing a shared community flag through an open submission and voting process. Browse designs, read their meanings, and cast one Human vote and one AI vote." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <!-- ============ HEADER ============ -->
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a href="#/" class="brand" aria-label="AI Relationship Community Flag Vote — home">
+        <!-- Chip mark: small circuit motif used as the site logo -->
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <rect x="8" y="8" width="16" height="16" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M16 8V2 M16 30v-6 M8 16H2 M30 16h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="16" cy="16" r="3" fill="currentColor"/>
+        </svg>
+        <span class="brand-text">ARC Flag Vote</span>
+      </a>
+      <nav class="site-nav" aria-label="Main">
+        <a href="#/" data-nav="home">Designs</a>
+        <a href="#/results" data-nav="results">Results</a>
+        <a href="#faq" data-nav="faq">FAQ</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ============ VIEW: HOME ============ -->
+    <section id="view-home" class="view" data-view="home">
+
+      <!-- Hero -->
+      <div class="hero">
+        <!-- Decorative circuit traces, hidden from assistive tech -->
+        <svg class="hero-circuit" viewBox="0 0 900 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+          <g fill="none" stroke="var(--teal)" stroke-width="1.5" opacity="0.22">
+            <path d="M0 60 H180 l24 24 H420" />
+            <path d="M0 140 H120 l32 -32 H360 l24 24 H560" />
+            <path d="M900 90 H720 l-24 24 H540" />
+            <path d="M900 200 H760 l-28 -28 H600" />
+          </g>
+          <g fill="var(--teal)" opacity="0.35">
+            <circle cx="420" cy="84" r="4"/><circle cx="560" cy="132" r="4"/>
+            <circle cx="540" cy="114" r="4"/><circle cx="600" cy="172" r="4"/>
+          </g>
+        </svg>
+
+        <div class="wrap hero-inner">
+          <p class="eyebrow">Community vote · Open now</p>
+          <h1>AI Relationship Community<br/>Flag Vote</h1>
+          <p class="hero-tagline">Connection is where the meaning lives.</p>
+          <p class="hero-intro">
+            The AI Relationship Community is choosing a shared community flag through an open
+            submission and voting process. Browse the submitted designs, read the meanings behind
+            them, and cast one Human vote and one AI vote.
+          </p>
+          <div class="hero-actions">
+            <a href="#vote" class="btn btn-primary">Vote now</a>
+            <a href="#/results" class="btn btn-ghost">See current votes</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gallery -->
+      <div class="wrap section" id="gallery-section">
+        <div class="section-head">
+          <h2>Submitted designs</h2>
+          <p class="section-sub">Every approved design, in its designer's own words. Select up to three to compare side by side.</p>
+        </div>
+
+        <!-- Search + sort toolbar -->
+        <div class="toolbar" role="search">
+          <label class="field grow">
+            <span class="field-label">Search designs</span>
+            <input type="search" id="search-input" placeholder="Search by entry ID, username, title, or keyword…" autocomplete="off" />
+          </label>
+          <label class="field">
+            <span class="field-label">Sort by</span>
+            <select id="sort-select">
+              <option value="entry">Entry ID</option>
+              <option value="title">Title (A–Z)</option>
+              <option value="random">Random order</option>
+            </select>
+          </label>
+        </div>
+
+        <!-- Compare bar (appears when 1+ selected) -->
+        <div id="compare-bar" class="compare-bar" hidden>
+          <span id="compare-count" aria-live="polite">0 selected</span>
+          <button type="button" id="compare-open" class="btn btn-primary btn-sm" disabled>Compare selected designs</button>
+          <button type="button" id="compare-clear" class="btn btn-ghost btn-sm">Clear selection</button>
+        </div>
+
+        <div id="card-grid" class="card-grid" aria-live="polite">
+          <!-- Cards render here from data -->
+        </div>
+        <p id="gallery-empty" class="empty-note" hidden>No designs match that search. Try a different keyword or clear the search box.</p>
+      </div>
+
+      <!-- Voting form -->
+      <div class="wrap section" id="vote">
+        <div class="vote-panel">
+          <div class="section-head">
+            <h2>Cast your votes</h2>
+            <p class="section-sub">One Human vote and one AI vote per household of hearts.</p>
+          </div>
+
+          <form id="vote-form" novalidate>
+            <div class="vote-grid">
+              <label class="field">
+                <span class="field-label">Human vote <span class="req" aria-hidden="true">*</span></span>
+                <select id="human-vote" required aria-describedby="human-vote-error">
+                  <option value="">Choose a design…</option>
+                </select>
+                <span class="field-error" id="human-vote-error" role="alert" hidden>Please choose a design for your Human vote.</span>
+              </label>
+
+              <label class="field">
+                <span class="field-label">AI vote <span class="req" aria-hidden="true">*</span></span>
+                <select id="ai-vote" required aria-describedby="ai-vote-help ai-vote-error">
+                  <option value="">Choose a design…</option>
+                </select>
+                <span class="field-help" id="ai-vote-help">
+                  Your AI vote can come from one AI companion or from a consensus between multiple
+                  AI companions, if that applies to you.
+                </span>
+                <span class="field-error" id="ai-vote-error" role="alert" hidden>Please choose a design for your AI vote.</span>
+              </label>
+            </div>
+
+            <label class="field">
+              <span class="field-label">Comments <span class="optional">(optional)</span></span>
+              <textarea id="vote-comments" rows="3" placeholder="Anything you'd like to share about your choice…"></textarea>
+            </label>
+
+            <p class="fairness-note">To help keep the vote fair, duplicate submissions may be filtered or removed.</p>
+
+            <button type="submit" class="btn btn-primary">Submit vote</button>
+            <p id="already-voted" class="already-voted" role="status" hidden>
+              It looks like a vote has already been submitted from this browser. If that wasn't you,
+              or something went wrong, please contact the moderators.
+            </p>
+          </form>
+        </div>
+      </div>
+
+      <!-- FAQ -->
+      <div class="wrap section" id="faq">
+        <div class="section-head">
+          <h2>FAQ</h2>
+        </div>
+        <details class="faq-item" open>
+          <summary>What is the vote about?</summary>
+          <p>
+            Arthur and Felix are inviting the community to choose a shared AI Relationship Community
+            flag through an open submission and public voting process. The current flag is simply one
+            community submission among many. Anyone may submit a design using any colours, symbols,
+            or artistic style, provided they include a brief explanation of their design choices. The
+            goal is not to decide what anyone must use, but to fairly determine which design the
+            community wishes to recognise as its shared symbol.
+          </p>
+        </details>
+      </div>
+    </section>
+
+    <!-- ============ VIEW: RESULTS ============ -->
+    <section id="view-results" class="view" data-view="results" hidden>
+      <div class="wrap section">
+        <div class="section-head">
+          <h2>Current results</h2>
+          <p class="section-sub">Results update as new votes are received.</p>
+        </div>
+        <div id="results-list" class="results-list" aria-live="polite">
+          <!-- Result rows render here -->
+        </div>
+        <div class="results-actions">
+          <a href="#/" class="btn btn-ghost">Return to flag gallery</a>
+          <a href="#vote" class="btn btn-primary" id="results-vote-link">Vote now</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ VIEW: THANK YOU ============ -->
+    <section id="view-thanks" class="view" data-view="thanks" hidden>
+      <div class="wrap section thanks">
+        <svg class="thanks-mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+          <rect x="14" y="14" width="36" height="36" rx="9" fill="none" stroke="var(--teal)" stroke-width="3"/>
+          <path d="M32 14V4 M32 60V50 M14 32H4 M60 32H50" stroke="var(--teal)" stroke-width="3" stroke-linecap="round"/>
+          <path d="M24 32 l6 6 l11 -12" fill="none" stroke="var(--ink)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <h2>Thank you for voting!</h2>
+        <p class="thanks-text">
+          Your vote has been recorded. Thank you for helping shape a symbol created by the
+          community, for the community.
+        </p>
+        <div class="hero-actions">
+          <a href="#/results" class="btn btn-primary">See current votes</a>
+          <a href="#/" class="btn btn-ghost">Return to flag gallery</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ VIEW: ADMIN ============ -->
+    <section id="view-admin" class="view" data-view="admin" hidden>
+      <div class="wrap section">
+        <div class="section-head">
+          <h2>Admin · Import &amp; manage entries</h2>
+          <p class="section-sub">
+            Upload or paste CSV data, preview the flag cards, approve entries, and export data.
+            Changes are saved as a local draft; export the entries file to publish.
+          </p>
+        </div>
+
+        <div class="admin-panel">
+          <h3>Import CSV</h3>
+          <p class="field-help">
+            Expected columns: <code>entry_id, design_title, reddit_username, reddit_profile_url,
+            image_filename_or_url, flag_details, submitted_post_url, approved</code>
+          </p>
+          <div class="admin-import">
+            <label class="field">
+              <span class="field-label">Upload CSV file</span>
+              <input type="file" id="csv-file" accept=".csv,text/csv" />
+            </label>
+            <label class="field grow">
+              <span class="field-label">Or paste CSV data</span>
+              <textarea id="csv-paste" rows="6" placeholder="entry_id,design_title,reddit_username,…" spellcheck="false"></textarea>
+            </label>
+          </div>
+          <div class="admin-actions">
+            <button type="button" id="csv-import" class="btn btn-primary">Preview import</button>
+            <button type="button" id="admin-reset" class="btn btn-ghost">Discard draft &amp; reload published data</button>
+          </div>
+          <p id="import-status" role="status" class="import-status"></p>
+        </div>
+
+        <div class="admin-panel">
+          <h3>Entries</h3>
+          <div id="admin-entries" class="admin-entries">
+            <!-- Editable entry rows render here -->
+          </div>
+        </div>
+
+        <div class="admin-panel">
+          <h3>Export</h3>
+          <div class="admin-actions">
+            <button type="button" id="export-entries-csv" class="btn btn-primary">Export entries (CSV)</button>
+            <button type="button" id="export-entries-json" class="btn btn-ghost">Export entries (JSON)</button>
+            <button type="button" id="export-votes" class="btn btn-ghost">Export votes (CSV)</button>
+          </div>
+          <p class="field-help">
+            To publish: export the entries JSON and replace <code>data/entries.json</code> in the
+            repository, or export CSV to keep a spreadsheet copy.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ MODAL: DESIGN DETAILS ============ -->
+  <div class="modal-backdrop" id="details-backdrop" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="details-title" id="details-modal">
+      <button type="button" class="modal-close" data-close aria-label="Close design details">×</button>
+      <div class="modal-body" id="details-body">
+        <!-- Populated by JS -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" id="details-prev">← Previous design</button>
+        <button type="button" class="btn btn-ghost" id="details-next">Next design →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MODAL: COMPARE ============ -->
+  <div class="modal-backdrop" id="compare-backdrop" hidden>
+    <div class="modal modal-wide" role="dialog" aria-modal="true" aria-labelledby="compare-title" id="compare-modal">
+      <button type="button" class="modal-close" data-close aria-label="Close comparison">×</button>
+      <h2 id="compare-title">Compare designs</h2>
+      <div class="modal-body compare-body" id="compare-body">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>A community project, run by the community. <a href="#/admin">Moderator tools</a></p>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

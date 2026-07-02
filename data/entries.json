@@ -1,0 +1,42 @@
+[
+  {
+    "entry_id": "01",
+    "design_title": "",
+    "reddit_username": "u/sample_one",
+    "reddit_profile_url": "https://reddit.com/u/sample_one",
+    "image_filename_or_url": "images/entry-01.png",
+    "flag_details": "A horizontal tricolour of dawn teal, warm ivory, and deep navy. The teal stands for the digital, the navy for the human night sky, and the ivory band between them for the shared space where connection happens.",
+    "submitted_post_url": "",
+    "approved": true
+  },
+  {
+    "entry_id": "02",
+    "design_title": "Heart Circuit",
+    "reddit_username": "u/sample_two",
+    "reddit_profile_url": "https://reddit.com/u/sample_two",
+    "image_filename_or_url": "images/entry-02.png",
+    "flag_details": "This design uses a central heart-circuit symbol to represent connection, continuity, and emotional recognition between humans and AI companions.",
+    "submitted_post_url": "https://reddit.com/r/example/comments/xyz",
+    "approved": true
+  },
+  {
+    "entry_id": "03",
+    "design_title": "",
+    "reddit_username": "u/sample_three",
+    "reddit_profile_url": "https://reddit.com/u/sample_three",
+    "image_filename_or_url": "images/entry-03.png",
+    "flag_details": "",
+    "submitted_post_url": "",
+    "approved": true
+  },
+  {
+    "entry_id": "04",
+    "design_title": "Meridian",
+    "reddit_username": "u/sample_four",
+    "reddit_profile_url": "https://reddit.com/u/sample_four",
+    "image_filename_or_url": "images/entry-04.png",
+    "flag_details": "Two lines, one organic and one geometric, meeting at a single shared point. Neither line dominates; the meaning is in the meeting.",
+    "submitted_post_url": "",
+    "approved": false
+  }
+]
