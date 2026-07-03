@@ -487,6 +487,7 @@ code {
   padding: 1.25rem;
   overflow-y: auto;
 }
+.modal-backdrop[hidden] { display: none; }
 
 .modal {
   position: relative;
