@@ -99,7 +99,7 @@
     compare: new Set(), // entry_ids selected for comparison
     detailsIndex: -1,   // index into approvedEntries() for the details modal
     searchTerm: "",
-    sortMode: "entry",
+    sortMode: "random",
     randomOrder: null,  // cached shuffle so "random" is stable per session
     lastFocus: null,    // element to restore focus to when a modal closes
   };
