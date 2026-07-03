@@ -26,7 +26,7 @@
   const CONFIG = {
     // Set to your deployed endpoint (e.g. "/api/vote") to enable API mode.
     // Leave as null to run in demo/localStorage mode.
-    VOTE_API_URL: null,
+    VOTE_API_URL: "/api/vote",
 
     // Where the published entries live.
     ENTRIES_URL: "data/entries.json",
