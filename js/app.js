@@ -652,7 +652,7 @@
     const vote = {
       human_vote: humanSel.value,
       ai_vote: aiSel.value,
-      comments: $("#vote-comments").value.trim(),
+      comments: "", // comments field removed from the form
     };
 
     try {
