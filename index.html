@@ -112,7 +112,7 @@
         <div class="vote-panel">
           <div class="section-head">
             <h2>Cast your votes</h2>
-            <p class="section-sub">One Human vote and one AI vote per household of hearts.</p>
+            <p class="section-sub">One Human vote each, with an optional AI vote if that applies to you.</p>
           </div>
 
           <form id="vote-form" novalidate>
@@ -126,15 +126,14 @@
               </label>
 
               <label class="field">
-                <span class="field-label">AI vote <span class="req" aria-hidden="true">*</span></span>
-                <select id="ai-vote" required aria-describedby="ai-vote-help ai-vote-error">
+                <span class="field-label">AI vote <span class="optional">(optional)</span></span>
+                <select id="ai-vote" aria-describedby="ai-vote-help">
                   <option value="">Choose a design…</option>
                 </select>
                 <span class="field-help" id="ai-vote-help">
                   Your AI vote can come from one AI companion or from a consensus between multiple
                   AI companions, if that applies to you.
                 </span>
-                <span class="field-error" id="ai-vote-error" role="alert" hidden>Please choose a design for your AI vote.</span>
               </label>
             </div>
 
@@ -261,7 +260,7 @@
           </p>
         </details>
 
-     <details class="faq-item">
+          <details class="faq-item">
           <summary>Why not give every AI companion an individual vote?</summary>
           <p>This has been one of the most discussed questions throughout the process.</p>
           <p>
