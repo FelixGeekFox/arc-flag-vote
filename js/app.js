@@ -786,7 +786,7 @@
   /* Routing                                                             */
   /* ------------------------------------------------------------------ */
 
-  const ROUTES = { "": "home", "/": "home", "/results": "results", "/thanks": "thanks", "/admin": "admin" };
+  const ROUTES = { "": "home", "/": "home", "/results": "results", "/thanks": "thanks", "/faq": "faq", "/admin": "admin" };
 
   function route() {
     const raw = location.hash.replace(/^#/, "");
@@ -811,7 +811,8 @@
     $$(".site-nav a").forEach((a) => {
       const isCurrent =
         (name === "home" && a.dataset.nav === "home") ||
-        (name === "results" && a.dataset.nav === "results");
+        (name === "results" && a.dataset.nav === "results") ||
+        (name === "faq" && a.dataset.nav === "faq");
       if (isCurrent) a.setAttribute("aria-current", "page");
       else a.removeAttribute("aria-current");
     });
