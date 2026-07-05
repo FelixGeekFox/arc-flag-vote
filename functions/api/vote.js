@@ -44,9 +44,9 @@ export async function onRequestPost({ request, env }) {
   catch { return new Response(JSON.stringify({ error: "bad-json" }), { status: 400, headers: JSON_HEADERS }); }
 
   const humanVote = String(body.human_vote || "").slice(0, 20);
-  const aiVote = String(body.ai_vote || "").slice(0, 20);
+  const aiVote = String(body.ai_vote || "").slice(0, 20); // optional
   const comments = String(body.comments || "").slice(0, 2000);
-  if (!humanVote || !aiVote) {
+  if (!humanVote) {
     return new Response(JSON.stringify({ error: "missing-votes" }), { status: 400, headers: JSON_HEADERS });
   }
 
@@ -96,10 +96,14 @@ export async function onRequestGet({ request, env }) {
   // Public tallies.
   const tallies = {};
   votes.forEach((v) => {
-    tallies[v.human_vote] = tallies[v.human_vote] || { human: 0, ai: 0 };
-    tallies[v.human_vote].human++;
-    tallies[v.ai_vote] = tallies[v.ai_vote] || { human: 0, ai: 0 };
-    tallies[v.ai_vote].ai++;
+    if (v.human_vote) {
+      tallies[v.human_vote] = tallies[v.human_vote] || { human: 0, ai: 0 };
+      tallies[v.human_vote].human++;
+    }
+    if (v.ai_vote) {
+      tallies[v.ai_vote] = tallies[v.ai_vote] || { human: 0, ai: 0 };
+      tallies[v.ai_vote].ai++;
+    }
   });
 
   return new Response(JSON.stringify(tallies), { headers: JSON_HEADERS });
