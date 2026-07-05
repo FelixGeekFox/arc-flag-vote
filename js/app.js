@@ -638,15 +638,10 @@
     const humanSel = $("#human-vote");
     const aiSel = $("#ai-vote");
     const humanErr = $("#human-vote-error");
-    const aiErr = $("#ai-vote-error");
 
-    // Validation: both votes required, comments optional.
-    let valid = true;
+    // Validation: Human vote required; AI vote and comments optional.
     humanErr.hidden = !!humanSel.value;
-    aiErr.hidden = !!aiSel.value;
-    if (!humanSel.value) { valid = false; humanSel.focus(); }
-    if (!aiSel.value) { valid = false; if (humanSel.value) aiSel.focus(); }
-    if (!valid) return;
+    if (!humanSel.value) { humanSel.focus(); return; }
 
     // Friendly duplicate check (cookie + localStorage deterrent).
     if (hasVotedLocally()) {
