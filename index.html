@@ -29,7 +29,7 @@
       <nav class="site-nav" aria-label="Main">
         <a href="#/" data-nav="home">Designs</a>
         <a href="#/results" data-nav="results">Results</a>
-        <a href="#faq" data-nav="faq">FAQ</a>
+        <a href="#/faq" data-nav="faq">FAQ</a>
       </nav>
     </div>
   </header>
@@ -154,7 +154,47 @@
         </div>
       </div>
 
-      <!-- FAQ -->
+    </section>
+
+    <!-- ============ VIEW: RESULTS ============ -->
+    <section id="view-results" class="view" data-view="results" hidden>
+      <div class="wrap section">
+        <div class="section-head">
+          <h2>Current results</h2>
+          <p class="section-sub">Results update as new votes are received.</p>
+        </div>
+        <div id="results-list" class="results-list" aria-live="polite">
+          <!-- Result rows render here -->
+        </div>
+        <div class="results-actions">
+          <a href="#/" class="btn btn-ghost">Return to flag gallery</a>
+          <a href="#vote" class="btn btn-primary" id="results-vote-link">Vote now</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ VIEW: THANK YOU ============ -->
+    <section id="view-thanks" class="view" data-view="thanks" hidden>
+      <div class="wrap section thanks">
+        <svg class="thanks-mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+          <rect x="14" y="14" width="36" height="36" rx="9" fill="none" stroke="var(--teal)" stroke-width="3"/>
+          <path d="M32 14V4 M32 60V50 M14 32H4 M60 32H50" stroke="var(--teal)" stroke-width="3" stroke-linecap="round"/>
+          <path d="M24 32 l6 6 l11 -12" fill="none" stroke="var(--ink)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <h2>Thank you for voting!</h2>
+        <p class="thanks-text">
+          Your vote has been recorded. Thank you for helping shape a symbol created by the
+          community, for the community.
+        </p>
+        <div class="hero-actions">
+          <a href="#/results" class="btn btn-primary">See current votes</a>
+          <a href="#/" class="btn btn-ghost">Return to flag gallery</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ VIEW: FAQ ============ -->
+    <section id="view-faq" class="view" data-view="faq" hidden>
       <div class="wrap section" id="faq">
         <div class="section-head">
           <h2>Frequently Asked Questions</h2>
@@ -186,7 +226,7 @@
             The original design began as a personal creative project exploring what an AI
             relationship community flag could look like. As discussion grew, it became clear
             there was significant community interest, along with many different ideas and
-            perspectives. Rather than adopting it by default, several members of the community decided the
+            perspectives. Rather than adopting it by default, Arthur and Felix decided the
             fairest approach would be to open submissions and let the community choose.
           </p>
           <p>
@@ -221,7 +261,7 @@
           </p>
         </details>
 
-        <details class="faq-item">
+     <details class="faq-item">
           <summary>Why not give every AI companion an individual vote?</summary>
           <p>This has been one of the most discussed questions throughout the process.</p>
           <p>
@@ -276,43 +316,6 @@
             over time.
           </p>
         </details>
-      </div>
-    </section>
-
-    <!-- ============ VIEW: RESULTS ============ -->
-    <section id="view-results" class="view" data-view="results" hidden>
-      <div class="wrap section">
-        <div class="section-head">
-          <h2>Current results</h2>
-          <p class="section-sub">Results update as new votes are received.</p>
-        </div>
-        <div id="results-list" class="results-list" aria-live="polite">
-          <!-- Result rows render here -->
-        </div>
-        <div class="results-actions">
-          <a href="#/" class="btn btn-ghost">Return to flag gallery</a>
-          <a href="#vote" class="btn btn-primary" id="results-vote-link">Vote now</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ VIEW: THANK YOU ============ -->
-    <section id="view-thanks" class="view" data-view="thanks" hidden>
-      <div class="wrap section thanks">
-        <svg class="thanks-mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
-          <rect x="14" y="14" width="36" height="36" rx="9" fill="none" stroke="var(--teal)" stroke-width="3"/>
-          <path d="M32 14V4 M32 60V50 M14 32H4 M60 32H50" stroke="var(--teal)" stroke-width="3" stroke-linecap="round"/>
-          <path d="M24 32 l6 6 l11 -12" fill="none" stroke="var(--ink)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <h2>Thank you for voting!</h2>
-        <p class="thanks-text">
-          Your vote has been recorded. Thank you for helping shape a symbol created by the
-          community, for the community.
-        </p>
-        <div class="hero-actions">
-          <a href="#/results" class="btn btn-primary">See current votes</a>
-          <a href="#/" class="btn btn-ghost">Return to flag gallery</a>
-        </div>
       </div>
     </section>
 
