@@ -1,7 +1,7 @@
 /* ==========================================================================
-   AI Relationship Community Flag Vote — app.js
+   AI Relationship Community Flag Vote â€” app.js
    --------------------------------------------------------------------------
-   Plain vanilla JS, no build step. Everything renders from data — no entries
+   Plain vanilla JS, no build step. Everything renders from data â€” no entries
    are hard-coded into the HTML.
 
    Data sources, in priority order:
@@ -49,7 +49,7 @@
    * True IP-based limiting can only happen server-side (browsers cannot see
    * their own public IP, and trusting a client-reported IP is meaningless).
    * The serverless function in functions/api/vote.js stores a SALTED SHA-256
-   * HASH of the caller's IP — never the raw IP — and rejects repeat hashes.
+   * HASH of the caller's IP â€” never the raw IP â€” and rejects repeat hashes.
    *
    * Client-side, we add a cookie + localStorage flag to reduce *accidental*
    * repeat submissions. IP limiting is a deterrent, not a perfect anti-abuse
@@ -108,8 +108,7 @@
     randomOrder: null,  // cached shuffle so "random" is stable per session
     lastFocus: null,    // element to restore focus to when a modal closes
     turnstileWidgetId: null,
-    turnstileTokenResolve: null,
-    turnstileTokenReject: null,
+    turnstileToken: "",
   };
 
   const $ = (sel, root = document) => root.querySelector(sel);
@@ -138,9 +137,9 @@
   /** "01" -> "Entry #01" */
   const entryLabel = (e) => `Entry #${e.entry_id}`;
 
-  /** Label used in dropdowns: "Entry #03 — Heart Circuit" or "Entry #04". */
+  /** Label used in dropdowns: "Entry #03 â€” Heart Circuit" or "Entry #04". */
   const optionLabel = (e) =>
-    e.design_title ? `${entryLabel(e)} — ${e.design_title}` : entryLabel(e);
+    e.design_title ? `${entryLabel(e)} â€” ${e.design_title}` : entryLabel(e);
 
   /** Alt text for a flag image. */
   const flagAlt = (e) =>
@@ -274,7 +273,7 @@
         state.entries = JSON.parse(draft);
         return;
       }
-    } catch { /* corrupt draft — fall through to published data */ }
+    } catch { /* corrupt draft â€” fall through to published data */ }
 
     // 2. Published dataset.
     try {
@@ -299,7 +298,7 @@
     /** Submit a vote. Returns { ok, duplicate } */
     async submit(vote) {
       if (CONFIG.VOTE_API_URL) {
-        // API mode — the server enforces hashed-IP duplicate limiting.
+        // API mode â€” the server enforces hashed-IP duplicate limiting.
         const res = await fetch(CONFIG.VOTE_API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -311,7 +310,7 @@
         return { ok: true, duplicate: false };
       }
 
-      // Demo mode — append to localStorage.
+      // Demo mode â€” append to localStorage.
       const votes = VoteStore._readLocal();
       votes.push({ ...vote, submitted_at: new Date().toISOString() });
       localStorage.setItem(CONFIG.LS_VOTES, JSON.stringify(votes));
@@ -443,7 +442,7 @@
                 ? `<a href="${esc(profile)}" target="_blank" rel="noopener noreferrer">${esc(e.reddit_username)}</a>`
                 : esc(e.reddit_username)}
             </p>
-            ${post ? `<p class="flag-links"><a href="${esc(post)}" target="_blank" rel="noopener noreferrer">Original Reddit submission ↗</a></p>` : ""}
+            ${post ? `<p class="flag-links"><a href="${esc(post)}" target="_blank" rel="noopener noreferrer">Original Reddit submission â†—</a></p>` : ""}
             <div class="flag-actions">
               <button type="button" class="btn btn-ghost btn-sm" data-details="${esc(e.entry_id)}">View design details</button>
               <label class="compare-check">
@@ -464,7 +463,7 @@
   /* ------------------------------------------------------------------ */
 
   function renderVoteOptions() {
-    const opts = ['<option value="">Choose a design…</option>']
+    const opts = ['<option value="">Choose a designâ€¦</option>']
       .concat(
         approvedEntries()
           .slice()
@@ -493,7 +492,7 @@
       a.entry.entry_id.localeCompare(b.entry.entry_id, undefined, { numeric: true }));
 
     if (rows.length === 0) {
-      listEl.innerHTML = `<p class="empty-note">No approved designs yet — check back soon.</p>`;
+      listEl.innerHTML = `<p class="empty-note">No approved designs yet â€” check back soon.</p>`;
       return;
     }
 
@@ -509,8 +508,8 @@
               ${e.design_title ? `<span class="result-title">${esc(e.design_title)}</span>` : ""}
             </div>
             <p class="result-counts">
-              Human votes: <strong>${r.human}</strong> ·
-              AI votes: <strong>${r.ai}</strong> ·
+              Human votes: <strong>${r.human}</strong> Â·
+              AI votes: <strong>${r.ai}</strong> Â·
               Combined: <strong>${r.total}</strong> (${pct}%)
             </p>
           </div>
@@ -585,7 +584,7 @@
           ? `<a href="${esc(profile)}" target="_blank" rel="noopener noreferrer">${esc(e.reddit_username)}</a>`
           : esc(e.reddit_username)}
       </p>
-      ${post ? `<p class="details-meta"><a href="${esc(post)}" target="_blank" rel="noopener noreferrer">Original Reddit submission ↗</a></p>` : ""}
+      ${post ? `<p class="details-meta"><a href="${esc(post)}" target="_blank" rel="noopener noreferrer">Original Reddit submission â†—</a></p>` : ""}
       <h3>About this design</h3>
       <p class="details-text">${e.flag_details ? esc(e.flag_details) : "No explanation provided."}</p>
     `;
@@ -667,26 +666,24 @@
 
     state.turnstileWidgetId = window.turnstile.render(container, {
       sitekey: CONFIG.TURNSTILE_SITE_KEY,
-      size: "invisible",
       action: CONFIG.TURNSTILE_ACTION,
       callback(token) {
+        state.turnstileToken = token;
         hideTurnstileError();
-        if (state.turnstileTokenResolve) state.turnstileTokenResolve(token);
-        state.turnstileTokenResolve = null;
-        state.turnstileTokenReject = null;
       },
       "error-callback"() {
-        if (state.turnstileTokenReject) state.turnstileTokenReject(new Error("turnstile-error"));
-        state.turnstileTokenResolve = null;
-        state.turnstileTokenReject = null;
+        state.turnstileToken = "";
+        showTurnstileError("Security check failed. Please try again.");
       },
       "expired-callback"() {
-        if (state.turnstileWidgetId !== null) window.turnstile.reset(state.turnstileWidgetId);
+        state.turnstileToken = "";
+        showTurnstileError("Security check expired. Please complete it again.");
       },
     });
   }
 
   function resetTurnstile() {
+    state.turnstileToken = "";
     if (state.turnstileWidgetId !== null && window.turnstile) {
       window.turnstile.reset(state.turnstileWidgetId);
     }
@@ -695,12 +692,8 @@
   function getTurnstileToken() {
     if (!CONFIG.VOTE_API_URL) return Promise.resolve("");
     if (!window.turnstile || state.turnstileWidgetId === null) return Promise.reject(new Error("turnstile-not-ready"));
-
-    return new Promise((resolve, reject) => {
-      state.turnstileTokenResolve = resolve;
-      state.turnstileTokenReject = reject;
-      window.turnstile.execute(state.turnstileWidgetId);
-    });
+    if (!state.turnstileToken) return Promise.reject(new Error("turnstile-incomplete"));
+    return Promise.resolve(state.turnstileToken);
   }
 
 
@@ -750,7 +743,7 @@
       location.hash = "#/thanks";
     } catch (err) {
       if (err && String(err.message || "").startsWith("turnstile")) {
-        showTurnstileError("Security check failed. Please refresh and try again.");
+        showTurnstileError("Please complete the security check before submitting your vote.");
       } else {
         alert("Something went wrong submitting your vote. Please try again in a moment.");
       }
@@ -842,7 +835,7 @@
         saveDraft();
         renderAdmin();
         refreshPublicViews();
-        status.textContent = `Imported ${entries.length} entr${entries.length === 1 ? "y" : "ies"}. Preview below — approve entries to make them visible.`;
+        status.textContent = `Imported ${entries.length} entr${entries.length === 1 ? "y" : "ies"}. Preview below â€” approve entries to make them visible.`;
       } catch (err) {
         status.textContent = `Import failed: ${err.message}`;
       }
@@ -1005,3 +998,4 @@
 
   init();
 })();
+

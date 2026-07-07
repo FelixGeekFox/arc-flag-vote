@@ -639,8 +639,12 @@ code {
 
 
 /* Cloudflare Turnstile security check */
+.turnstile-check {
+  margin-top: 1rem;
+}
+
 .turnstile-widget {
-  min-height: 0;
+  margin-top: 0.5rem;
 }
 
 .turnstile-error {

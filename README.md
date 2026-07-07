@@ -88,7 +88,7 @@ change; the UI never touches storage directly.
 
 ## Cloudflare Turnstile
 
-Voting uses Cloudflare Turnstile in invisible mode when the backend is enabled.
+Voting uses Cloudflare Turnstile as a visible managed security check when the backend is enabled.
 
 - Frontend: replace `REPLACE_WITH_TURNSTILE_SITE_KEY` in `js/app.js` with the
   public Turnstile site key.
