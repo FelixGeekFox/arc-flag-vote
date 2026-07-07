@@ -63,12 +63,15 @@ Import the CSV on the admin page, tidy anything up inline, then use
 
 1. Push this folder to a Git repo and connect it to Cloudflare Pages.
 2. In the Pages project, create a KV namespace and bind it as `VOTES`.
-3. Add environment variables: `SALT` (a long random string) and `ADMIN_KEY`
-   (for the CSV export endpoint).
-4. In `js/app.js`, set `VOTE_API_URL: "/api/vote"`.
+3. Add environment variables: `SALT` (a long random string), `ADMIN_KEY`
+   (for the CSV export endpoint), and `TURNSTILE_SECRET_KEY` (from Cloudflare Turnstile).
+4. Create a Cloudflare Turnstile widget for the vote domain and copy its public
+   site key into `TURNSTILE_SITE_KEY` in `js/app.js`.
+5. In `js/app.js`, set `VOTE_API_URL: "/api/vote"`.
 
 The included function (`functions/api/vote.js`) then handles:
 
+- Cloudflare Turnstile verification before any vote is recorded
 - Recording votes
 - **Hashed-IP duplicate limiting** — a salted SHA-256 hash of the caller's
   IP is stored, never the raw IP; repeat hashes get a friendly 409
@@ -82,6 +85,18 @@ tier of Cloudflare Workers if you want to stay on Pages.
 **Upgrade path if the project grows:** swap KV for Supabase (Postgres) or
 Cloudflare D1. Only `VoteStore` in `js/app.js` and the function need to
 change; the UI never touches storage directly.
+
+## Cloudflare Turnstile
+
+Voting uses Cloudflare Turnstile in invisible mode when the backend is enabled.
+
+- Frontend: replace `REPLACE_WITH_TURNSTILE_SITE_KEY` in `js/app.js` with the
+  public Turnstile site key.
+- Backend: set the Pages environment variable `TURNSTILE_SECRET_KEY` to the
+  private Turnstile secret key.
+- Keep the secret key out of git. Only the site key belongs in client-side code.
+- If the site key placeholder is still present, the submit button is disabled so
+  voting cannot reopen without the security check.
 
 ## Fairness notes
 

@@ -28,6 +28,11 @@
     // Leave as null to run in demo/localStorage mode.
     VOTE_API_URL: "/api/vote",
 
+    // Cloudflare Turnstile public site key. The private secret key belongs in
+    // the Cloudflare Pages TURNSTILE_SECRET_KEY environment variable.
+    TURNSTILE_SITE_KEY: "0x4AAAAAADxlt4OxDznU2qhE",
+    TURNSTILE_ACTION: "submit_vote",
+
     // Where the published entries live.
     ENTRIES_URL: "data/entries.json",
 
@@ -102,6 +107,9 @@
     sortMode: "random",
     randomOrder: null,  // cached shuffle so "random" is stable per session
     lastFocus: null,    // element to restore focus to when a modal closes
+    turnstileWidgetId: null,
+    turnstileTokenResolve: null,
+    turnstileTokenReject: null,
   };
 
   const $ = (sel, root = document) => root.querySelector(sel);
@@ -629,6 +637,73 @@
     openModal("#compare-backdrop");
   }
 
+
+  /* ------------------------------------------------------------------ */
+  /* Cloudflare Turnstile                                                */
+  /* ------------------------------------------------------------------ */
+
+  function showTurnstileError(message) {
+    const errorEl = $("#turnstile-error");
+    if (!errorEl) return;
+    errorEl.textContent = message;
+    errorEl.hidden = false;
+  }
+
+  function hideTurnstileError() {
+    const errorEl = $("#turnstile-error");
+    if (errorEl) errorEl.hidden = true;
+  }
+
+  function initTurnstile() {
+    if (!CONFIG.VOTE_API_URL) return;
+
+    const container = $("#turnstile-widget");
+    if (!container || state.turnstileWidgetId !== null) return;
+
+    if (!window.turnstile || typeof window.turnstile.render !== "function") {
+      window.setTimeout(initTurnstile, 150);
+      return;
+    }
+
+    state.turnstileWidgetId = window.turnstile.render(container, {
+      sitekey: CONFIG.TURNSTILE_SITE_KEY,
+      size: "invisible",
+      action: CONFIG.TURNSTILE_ACTION,
+      callback(token) {
+        hideTurnstileError();
+        if (state.turnstileTokenResolve) state.turnstileTokenResolve(token);
+        state.turnstileTokenResolve = null;
+        state.turnstileTokenReject = null;
+      },
+      "error-callback"() {
+        if (state.turnstileTokenReject) state.turnstileTokenReject(new Error("turnstile-error"));
+        state.turnstileTokenResolve = null;
+        state.turnstileTokenReject = null;
+      },
+      "expired-callback"() {
+        if (state.turnstileWidgetId !== null) window.turnstile.reset(state.turnstileWidgetId);
+      },
+    });
+  }
+
+  function resetTurnstile() {
+    if (state.turnstileWidgetId !== null && window.turnstile) {
+      window.turnstile.reset(state.turnstileWidgetId);
+    }
+  }
+
+  function getTurnstileToken() {
+    if (!CONFIG.VOTE_API_URL) return Promise.resolve("");
+    if (!window.turnstile || state.turnstileWidgetId === null) return Promise.reject(new Error("turnstile-not-ready"));
+
+    return new Promise((resolve, reject) => {
+      state.turnstileTokenResolve = resolve;
+      state.turnstileTokenReject = reject;
+      window.turnstile.execute(state.turnstileWidgetId);
+    });
+  }
+
+
   /* ------------------------------------------------------------------ */
   /* Voting                                                              */
   /* ------------------------------------------------------------------ */
@@ -650,6 +725,10 @@
       return;
     }
 
+    const submitButton = event.submitter || document.querySelector("#vote-form button[type='submit']");
+    if (submitButton) submitButton.disabled = true;
+    hideTurnstileError();
+
     const vote = {
       human_vote: humanSel.value,
       ai_vote: aiSel.value,
@@ -657,6 +736,7 @@
     };
 
     try {
+      vote.turnstile_token = await getTurnstileToken();
       const result = await VoteStore.submit(vote);
       if (result.paused) {
         $("#vote-paused").hidden = false;
@@ -668,8 +748,15 @@
       }
       markVotedLocally();
       location.hash = "#/thanks";
-    } catch {
-      alert("Something went wrong submitting your vote. Please try again in a moment.");
+    } catch (err) {
+      if (err && String(err.message || "").startsWith("turnstile")) {
+        showTurnstileError("Security check failed. Please refresh and try again.");
+      } else {
+        alert("Something went wrong submitting your vote. Please try again in a moment.");
+      }
+      resetTurnstile();
+    } finally {
+      if (submitButton) submitButton.disabled = false;
     }
   }
 
@@ -909,6 +996,7 @@
     renderGallery();
     renderVoteOptions();
     wireEvents();
+    initTurnstile();
     route();
 
     // Show the friendly note up front if this browser has already voted.

@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 </head>
 <body>
 
@@ -138,6 +139,9 @@
             </div>
 
             <p class="fairness-note">To help keep the vote fair, duplicate submissions may be filtered or removed.</p>
+
+            <div id="turnstile-widget" class="turnstile-widget" aria-hidden="true"></div>
+            <p id="turnstile-error" class="field-error turnstile-error" role="alert" hidden>Security check failed. Please try again.</p>
 
             <button type="submit" class="btn btn-primary">Submit vote</button>
             <p id="already-voted" class="already-voted" role="status" hidden>

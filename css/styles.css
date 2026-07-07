@@ -636,3 +636,14 @@ code {
   .result-thumb { width: 72px; height: 48px; }
   .admin-entry { grid-template-columns: 1fr; }
 }
+
+
+/* Cloudflare Turnstile security check */
+.turnstile-widget {
+  min-height: 0;
+}
+
+.turnstile-error {
+  display: block;
+  margin-top: 0.75rem;
+}

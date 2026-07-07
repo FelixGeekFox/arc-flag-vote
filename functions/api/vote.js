@@ -2,9 +2,9 @@
  * Cloudflare Pages Function: /api/vote
  * ------------------------------------
  * Optional backend for the flag vote. Deploy the site to Cloudflare Pages,
- * create a KV namespace, bind it as VOTES, and set a SALT environment
- * variable (any long random string). Then set VOTE_API_URL = "/api/vote"
- * in js/app.js.
+ * create a KV namespace, bind it as VOTES, and set environment variables:
+ * SALT (any long random string), ADMIN_KEY, and TURNSTILE_SECRET_KEY.
+ * Then set VOTE_API_URL = "/api/vote" and TURNSTILE_SITE_KEY in js/app.js.
  *
  * POST  /api/vote            → record a vote
  * GET   /api/vote?results=1  → tallies as { [entry_id]: { human, ai } }
@@ -22,6 +22,41 @@
 
 const JSON_HEADERS = { "Content-Type": "application/json" };
 
+/** Verify a Cloudflare Turnstile token before accepting a vote. */
+async function verifyTurnstile(token, ip, env) {
+  if (!env.TURNSTILE_SECRET_KEY) {
+    return { ok: false, status: 500, error: "turnstile-not-configured" };
+  }
+  if (!token) {
+    return { ok: false, status: 400, error: "missing-turnstile-token" };
+  }
+
+  const formData = new FormData();
+  formData.append("secret", env.TURNSTILE_SECRET_KEY);
+  formData.append("response", token);
+  if (ip && ip !== "unknown") formData.append("remoteip", ip);
+
+  const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+    method: "POST",
+    body: formData,
+  });
+
+  let result;
+  try { result = await response.json(); }
+  catch { return { ok: false, status: 502, error: "turnstile-bad-response" }; }
+
+  if (!result.success) {
+    return {
+      ok: false,
+      status: 403,
+      error: "turnstile-failed",
+      codes: result["error-codes"] || [],
+    };
+  }
+
+  return { ok: true };
+}
+
 /** Salted SHA-256 hash of an IP string, hex-encoded. */
 async function hashIp(ip, salt) {
   const data = new TextEncoder().encode(`${salt}:${ip}`);
@@ -35,13 +70,6 @@ export async function onRequestPost({ request, env }) {
   return new Response(JSON.stringify({ error: "paused" }), { status: 503, headers: JSON_HEADERS });
 
   const ip = request.headers.get("CF-Connecting-IP") || "unknown";
-  const ipHash = await hashIp(ip, env.SALT || "change-me");
-
-  // One vote per hashed IP.
-  const existing = await env.VOTES.get(`ip:${ipHash}`);
-  if (existing) {
-    return new Response(JSON.stringify({ error: "duplicate" }), { status: 409, headers: JSON_HEADERS });
-  }
 
   let body;
   try { body = await request.json(); }
@@ -52,6 +80,22 @@ export async function onRequestPost({ request, env }) {
   const comments = String(body.comments || "").slice(0, 2000);
   if (!humanVote) {
     return new Response(JSON.stringify({ error: "missing-votes" }), { status: 400, headers: JSON_HEADERS });
+  }
+
+  const turnstile = await verifyTurnstile(String(body.turnstile_token || ""), ip, env);
+  if (!turnstile.ok) {
+    return new Response(JSON.stringify({
+      error: turnstile.error,
+      codes: turnstile.codes || [],
+    }), { status: turnstile.status, headers: JSON_HEADERS });
+  }
+
+  const ipHash = await hashIp(ip, env.SALT || "change-me");
+
+  // One vote per hashed IP.
+  const existing = await env.VOTES.get(`ip:${ipHash}`);
+  if (existing) {
+    return new Response(JSON.stringify({ error: "duplicate" }), { status: 409, headers: JSON_HEADERS });
   }
 
   const record = {
