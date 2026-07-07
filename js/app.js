@@ -298,6 +298,7 @@
           body: JSON.stringify(vote),
         });
         if (res.status === 409) return { ok: false, duplicate: true };
+        if (res.status === 503) return { ok: false, paused: true };
         if (!res.ok) throw new Error("Vote submission failed.");
         return { ok: true, duplicate: false };
       }
@@ -657,6 +658,10 @@
 
     try {
       const result = await VoteStore.submit(vote);
+      if (result.paused) {
+        $("#vote-paused").hidden = false;
+        return;
+      }
       if (result.duplicate) {
         $("#already-voted").hidden = false;
         return;
