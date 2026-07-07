@@ -1,6 +1,11 @@
 /**
  * Cloudflare Pages Function: /api/vote
  * ------------------------------------
+ * Optional backend for the flag vote. Deploy the site to Cloudflare Pages,
+ * create a KV namespace, bind it as VOTES, and set a SALT environment
+ * variable (any long random string). Then set VOTE_API_URL = "/api/vote"
+ * in js/app.js.
+ *
  * POST  /api/vote            → record a vote
  * GET   /api/vote?results=1  → tallies as { [entry_id]: { human, ai } }
  * GET   /api/vote?export=1&key=ADMIN_KEY → CSV export for moderators
@@ -25,6 +30,10 @@ async function hashIp(ip, salt) {
 }
 
 export async function onRequestPost({ request, env }) {
+  // --- VOTING PAUSED ---
+  // Delete this block (down to the next blank line) to reopen voting.
+  return new Response(JSON.stringify({ error: "paused" }), { status: 503, headers: JSON_HEADERS });
+
   const ip = request.headers.get("CF-Connecting-IP") || "unknown";
   const ipHash = await hashIp(ip, env.SALT || "change-me");
 
