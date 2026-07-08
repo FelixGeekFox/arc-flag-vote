@@ -116,6 +116,10 @@ export async function onRequestPost({ request, env }) {
 export async function onRequestGet({ request, env }) {
   const url = new URL(request.url);
 
+  if (url.searchParams.get("status") === "1") {
+    return new Response(JSON.stringify({ paused: true }), { headers: JSON_HEADERS });
+  }
+
   // Collect all vote records.
   const votes = [];
   let cursor;

@@ -1,7 +1,7 @@
 /* ==========================================================================
-   AI Relationship Community Flag Vote â€” app.js
+   AI Relationship Community Flag Vote — app.js
    --------------------------------------------------------------------------
-   Plain vanilla JS, no build step. Everything renders from data â€” no entries
+   Plain vanilla JS, no build step. Everything renders from data — no entries
    are hard-coded into the HTML.
 
    Data sources, in priority order:
@@ -33,6 +33,10 @@
     TURNSTILE_SITE_KEY: "0x4AAAAAADxlt4OxDznU2qhE",
     TURNSTILE_ACTION: "submit_vote",
 
+    // Bump this whenever the server-side vote store is reset so old browser
+    // localStorage/cookie vote markers do not block voters from voting again.
+    VOTE_EPOCH: "2026-07-08-reset-1",
+
     // Where the published entries live.
     ENTRIES_URL: "data/entries.json",
 
@@ -49,7 +53,7 @@
    * True IP-based limiting can only happen server-side (browsers cannot see
    * their own public IP, and trusting a client-reported IP is meaningless).
    * The serverless function in functions/api/vote.js stores a SALTED SHA-256
-   * HASH of the caller's IP â€” never the raw IP â€” and rejects repeat hashes.
+   * HASH of the caller's IP — never the raw IP — and rejects repeat hashes.
    *
    * Client-side, we add a cookie + localStorage flag to reduce *accidental*
    * repeat submissions. IP limiting is a deterrent, not a perfect anti-abuse
@@ -137,9 +141,9 @@
   /** "01" -> "Entry #01" */
   const entryLabel = (e) => `Entry #${e.entry_id}`;
 
-  /** Label used in dropdowns: "Entry #03 â€” Heart Circuit" or "Entry #04". */
+  /** Label used in dropdowns: "Entry #03 — Heart Circuit" or "Entry #04". */
   const optionLabel = (e) =>
-    e.design_title ? `${entryLabel(e)} â€” ${e.design_title}` : entryLabel(e);
+    e.design_title ? `${entryLabel(e)} — ${e.design_title}` : entryLabel(e);
 
   /** Alt text for a flag image. */
   const flagAlt = (e) =>
@@ -273,7 +277,7 @@
         state.entries = JSON.parse(draft);
         return;
       }
-    } catch { /* corrupt draft â€” fall through to published data */ }
+    } catch { /* corrupt draft — fall through to published data */ }
 
     // 2. Published dataset.
     try {
@@ -298,7 +302,7 @@
     /** Submit a vote. Returns { ok, duplicate } */
     async submit(vote) {
       if (CONFIG.VOTE_API_URL) {
-        // API mode â€” the server enforces hashed-IP duplicate limiting.
+        // API mode — the server enforces hashed-IP duplicate limiting.
         const res = await fetch(CONFIG.VOTE_API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -310,11 +314,20 @@
         return { ok: true, duplicate: false };
       }
 
-      // Demo mode â€” append to localStorage.
+      // Demo mode — append to localStorage.
       const votes = VoteStore._readLocal();
       votes.push({ ...vote, submitted_at: new Date().toISOString() });
       localStorage.setItem(CONFIG.LS_VOTES, JSON.stringify(votes));
       return { ok: true, duplicate: false };
+    },
+
+    async status() {
+      if (!CONFIG.VOTE_API_URL) return { paused: false };
+      try {
+        const res = await fetch(`${CONFIG.VOTE_API_URL}?status=1`, { cache: "no-store" });
+        if (res.ok) return await res.json();
+      } catch { /* default to open so static preview still works */ }
+      return { paused: false };
     },
 
     /** Tallies: { [entry_id]: { human, ai } } */
@@ -359,11 +372,28 @@
   };
 
   const hasVotedLocally = () =>
-    localStorage.getItem(CONFIG.LS_VOTED) === "1" || getCookie(CONFIG.COOKIE_VOTED) === "1";
+    localStorage.getItem(CONFIG.LS_VOTED) === CONFIG.VOTE_EPOCH ||
+    getCookie(CONFIG.COOKIE_VOTED) === CONFIG.VOTE_EPOCH;
 
   function markVotedLocally() {
-    localStorage.setItem(CONFIG.LS_VOTED, "1");
-    setCookie(CONFIG.COOKIE_VOTED, "1", 365);
+    localStorage.setItem(CONFIG.LS_VOTED, CONFIG.VOTE_EPOCH);
+    setCookie(CONFIG.COOKIE_VOTED, CONFIG.VOTE_EPOCH, 365);
+  }
+
+  function setVotingPaused(paused) {
+    const pausedNote = $("#vote-paused");
+    const submit = document.querySelector("#vote-form button[type='submit']");
+    const turnstileCheck = document.querySelector(".turnstile-check");
+
+    if (pausedNote) pausedNote.hidden = !paused;
+    if (submit) submit.disabled = paused;
+    if (turnstileCheck) turnstileCheck.hidden = paused;
+  }
+
+  async function refreshVotingStatus() {
+    const status = await VoteStore.status();
+    setVotingPaused(Boolean(status.paused));
+    return status;
   }
 
   /* ------------------------------------------------------------------ */
@@ -442,7 +472,7 @@
                 ? `<a href="${esc(profile)}" target="_blank" rel="noopener noreferrer">${esc(e.reddit_username)}</a>`
                 : esc(e.reddit_username)}
             </p>
-            ${post ? `<p class="flag-links"><a href="${esc(post)}" target="_blank" rel="noopener noreferrer">Original Reddit submission â†—</a></p>` : ""}
+            ${post ? `<p class="flag-links"><a href="${esc(post)}" target="_blank" rel="noopener noreferrer">Original Reddit submission ↗</a></p>` : ""}
             <div class="flag-actions">
               <button type="button" class="btn btn-ghost btn-sm" data-details="${esc(e.entry_id)}">View design details</button>
               <label class="compare-check">
@@ -463,7 +493,7 @@
   /* ------------------------------------------------------------------ */
 
   function renderVoteOptions() {
-    const opts = ['<option value="">Choose a designâ€¦</option>']
+    const opts = ['<option value="">Choose a design…</option>']
       .concat(
         approvedEntries()
           .slice()
@@ -492,7 +522,7 @@
       a.entry.entry_id.localeCompare(b.entry.entry_id, undefined, { numeric: true }));
 
     if (rows.length === 0) {
-      listEl.innerHTML = `<p class="empty-note">No approved designs yet â€” check back soon.</p>`;
+      listEl.innerHTML = `<p class="empty-note">No approved designs yet — check back soon.</p>`;
       return;
     }
 
@@ -508,8 +538,8 @@
               ${e.design_title ? `<span class="result-title">${esc(e.design_title)}</span>` : ""}
             </div>
             <p class="result-counts">
-              Human votes: <strong>${r.human}</strong> Â·
-              AI votes: <strong>${r.ai}</strong> Â·
+              Human votes: <strong>${r.human}</strong> ·
+              AI votes: <strong>${r.ai}</strong> ·
               Combined: <strong>${r.total}</strong> (${pct}%)
             </p>
           </div>
@@ -584,7 +614,7 @@
           ? `<a href="${esc(profile)}" target="_blank" rel="noopener noreferrer">${esc(e.reddit_username)}</a>`
           : esc(e.reddit_username)}
       </p>
-      ${post ? `<p class="details-meta"><a href="${esc(post)}" target="_blank" rel="noopener noreferrer">Original Reddit submission â†—</a></p>` : ""}
+      ${post ? `<p class="details-meta"><a href="${esc(post)}" target="_blank" rel="noopener noreferrer">Original Reddit submission ↗</a></p>` : ""}
       <h3>About this design</h3>
       <p class="details-text">${e.flag_details ? esc(e.flag_details) : "No explanation provided."}</p>
     `;
@@ -835,7 +865,7 @@
         saveDraft();
         renderAdmin();
         refreshPublicViews();
-        status.textContent = `Imported ${entries.length} entr${entries.length === 1 ? "y" : "ies"}. Preview below â€” approve entries to make them visible.`;
+        status.textContent = `Imported ${entries.length} entr${entries.length === 1 ? "y" : "ies"}. Preview below — approve entries to make them visible.`;
       } catch (err) {
         status.textContent = `Import failed: ${err.message}`;
       }
@@ -989,11 +1019,12 @@
     renderGallery();
     renderVoteOptions();
     wireEvents();
-    initTurnstile();
+    const voteStatus = await refreshVotingStatus();
+    if (!voteStatus.paused) initTurnstile();
     route();
 
-    // Show the friendly note up front if this browser has already voted.
-    if (hasVotedLocally()) $("#already-voted").hidden = false;
+    // Show the friendly note up front only for this reset epoch.
+    if (!voteStatus.paused && hasVotedLocally()) $("#already-voted").hidden = false;
   }
 
   init();

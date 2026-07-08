@@ -97,6 +97,8 @@ Voting uses Cloudflare Turnstile as a visible managed security check when the ba
 - Keep the secret key out of git. Only the site key belongs in client-side code.
 - If the site key placeholder is still present, the submit button is disabled so
   voting cannot reopen without the security check.
+- When resetting the server-side vote store, bump `VOTE_EPOCH` in `js/app.js` so
+  old browser localStorage/cookie vote markers do not block people from voting again.
 
 ## Fairness notes
 
