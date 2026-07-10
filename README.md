@@ -73,8 +73,11 @@ The included function (`functions/api/vote.js`) then handles:
 
 - Cloudflare Turnstile verification before any vote is recorded
 - Recording votes
-- **Hashed-IP duplicate limiting** — a salted SHA-256 hash of the caller's
-  IP is stored, never the raw IP; repeat hashes get a friendly 409
+- Hashed-IP duplicate limiting, plus IPv6 /64 prefix limiting to reduce
+  incognito/privacy-address repeat voting without storing raw IPs
+- Turnstile hostname/action validation server-side
+- Anti-abuse metadata for moderator review, including salted IP/user-agent hashes
+  and Cloudflare request metadata; raw IPs are not stored
 - Public tallies for the results page
 - A key-protected CSV export for moderator review
 
@@ -104,10 +107,12 @@ Voting uses Cloudflare Turnstile as a visible managed security check when the ba
 
 - IP limiting is a **deterrent, not a perfect anti-abuse system**. Shared
   households and VPNs share IPs, and determined users can rotate them.
+- IPv6 /64 prefix limiting reduces repeat votes from ordinary privacy-address
+  rotation, but may also treat multiple voters on the same IPv6 network as one.
 - The client also sets a cookie + localStorage flag to prevent accidental
   repeat submissions, with a friendly message if a vote already exists.
 - Duplicate submissions may be filtered or removed during moderator review
-  using the vote export.
+  using the vote export and anti-abuse metadata.
 
 ## Accessibility checklist (already handled)
 
