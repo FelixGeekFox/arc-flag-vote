@@ -27,6 +27,8 @@
 
 html { scroll-behavior: smooth; }
 
+[hidden] { display: none !important; }
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
