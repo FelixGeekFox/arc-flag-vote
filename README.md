@@ -103,6 +103,17 @@ Voting uses Cloudflare Turnstile as a visible managed security check when the ba
 - When resetting the server-side vote store, bump `VOTE_EPOCH` in `js/app.js` so
   old browser localStorage/cookie vote markers do not block people from voting again.
 
+### Moderation: delete suspicious votes by Cloudflare Ray ID
+
+Admin-only endpoint for removing specific vote records from KV after moderator review:
+
+```powershell
+$body = @{ dry_run = $true; rays = @("CF_RAY_HERE") } | ConvertTo-Json -Compress
+Invoke-WebRequest -Uri "https://arc-flag-vote.pages.dev/api/vote?moderate=delete-rays&key=ADMIN_KEY_HERE" -Method Post -Body $body -ContentType "application/json"
+```
+
+Set `dry_run = $false` to delete matching `vote:*` records. The endpoint deletes vote records only; duplicate-deterrence markers are intentionally left in place.
+
 ## Fairness notes
 
 - IP limiting is a **deterrent, not a perfect anti-abuse system**. Shared

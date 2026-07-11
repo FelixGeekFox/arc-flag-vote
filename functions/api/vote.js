@@ -114,12 +114,69 @@ async function auditMetadata(request, ip, salt) {
   };
 }
 
+async function deleteVotesByCfRay(env, rays, { dryRun = false } = {}) {
+  const targets = new Set(rays.map((ray) => String(ray || "").trim()).filter(Boolean));
+  const matched = [];
+  let scanned = 0;
+  let cursor;
+
+  do {
+    const page = await env.VOTES.list({ prefix: "vote:", cursor });
+    for (const key of page.keys) {
+      scanned++;
+      const raw = await env.VOTES.get(key.name);
+      if (!raw) continue;
+      let vote;
+      try { vote = JSON.parse(raw); } catch { continue; }
+      if (!targets.has(String(vote.cf_ray || ""))) continue;
+
+      matched.push({
+        key: key.name,
+        cf_ray: vote.cf_ray || "",
+        human_vote: vote.human_vote || "",
+        ai_vote: vote.ai_vote || "",
+        submitted_at: vote.submitted_at || "",
+        cf_country: vote.cf_country || "",
+        cf_asn: vote.cf_asn || "",
+        cf_colo: vote.cf_colo || "",
+      });
+
+      if (!dryRun) await env.VOTES.delete(key.name);
+    }
+    cursor = page.list_complete ? null : page.cursor;
+  } while (cursor);
+
+  return {
+    dry_run: dryRun,
+    scanned,
+    requested: targets.size,
+    matched: matched.length,
+    deleted: dryRun ? 0 : matched.length,
+    votes: matched,
+  };
+}
+
 export async function onRequestPost({ request, env }) {
+  const url = new URL(request.url);
   const ip = request.headers.get("CF-Connecting-IP") || "unknown";
 
   let body;
   try { body = await request.json(); }
-  catch { return new Response(JSON.stringify({ error: "bad-json" }), { status: 400, headers: JSON_HEADERS }); }
+  catch { body = {}; }
+
+  if (url.searchParams.get("moderate") === "delete-rays") {
+    if (url.searchParams.get("key") !== env.ADMIN_KEY) {
+      return new Response("Forbidden", { status: 403 });
+    }
+    const rays = Array.isArray(body.rays) ? body.rays : url.searchParams.getAll("ray");
+    const dryRun = body.dry_run === true || url.searchParams.get("dry_run") === "1";
+    const result = await deleteVotesByCfRay(env, rays, { dryRun });
+    return new Response(JSON.stringify(result, null, 2), { headers: JSON_HEADERS });
+  }
+
+  if (!body || typeof body !== "object") {
+    return new Response(JSON.stringify({ error: "bad-json" }), { status: 400, headers: JSON_HEADERS });
+  }
 
   const humanVote = String(body.human_vote || "").slice(0, 20);
   const aiVote = String(body.ai_vote || "").slice(0, 20); // optional
