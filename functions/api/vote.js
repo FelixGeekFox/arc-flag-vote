@@ -239,12 +239,18 @@ export async function onRequestGet({ request, env }) {
 
   // Collect all vote records.
   const votes = [];
+  const skipped = [];
   let cursor;
   do {
     const page = await env.VOTES.list({ prefix: "vote:", cursor });
     for (const key of page.keys) {
       const raw = await env.VOTES.get(key.name);
-      if (raw) votes.push(JSON.parse(raw));
+      if (!raw) continue;
+      try {
+        votes.push(JSON.parse(raw));
+      } catch {
+        skipped.push(key.name);
+      }
     }
     cursor = page.list_complete ? null : page.cursor;
   } while (cursor);
@@ -259,7 +265,12 @@ export async function onRequestGet({ request, env }) {
     votes.forEach((v) => lines.push(
       [v.human_vote, v.ai_vote, v.comments, v.ip_hash, v.ip_prefix_hash || "", v.user_agent_hash || "", v.accept_language || "", v.cf_country || "", v.cf_asn || "", v.cf_colo || "", v.cf_ray || "", v.turnstile_hostname || "", v.turnstile_action || "", v.submitted_at].map(quote).join(",")
     ));
-    return new Response(lines.join("\n"), { headers: { "Content-Type": "text/csv" } });
+    return new Response(lines.join("\n"), {
+      headers: {
+        "Content-Type": "text/csv",
+        "X-Skipped-Malformed-Votes": String(skipped.length),
+      },
+    });
   }
 
   // Public tallies.
@@ -275,5 +286,10 @@ export async function onRequestGet({ request, env }) {
     }
   });
 
-  return new Response(JSON.stringify(tallies), { headers: JSON_HEADERS });
+  return new Response(JSON.stringify(tallies), {
+    headers: {
+      ...JSON_HEADERS,
+      "X-Skipped-Malformed-Votes": String(skipped.length),
+    },
+  });
 }
