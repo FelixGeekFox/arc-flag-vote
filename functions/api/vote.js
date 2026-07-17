@@ -25,6 +25,11 @@ const JSON_HEADERS = { "Content-Type": "application/json" };
 
 const EXPECTED_TURNSTILE_HOSTNAME = "arc-flag-vote.pages.dev";
 const EXPECTED_TURNSTILE_ACTION = "submit_vote";
+const VOTING_CLOSES_AT = "2026-07-17T11:00:00.000Z"; // 9:00pm AEST, 17 July 2026
+
+function votingClosed(now = Date.now()) {
+  return now >= Date.parse(VOTING_CLOSES_AT);
+}
 
 /** Verify a Cloudflare Turnstile token before accepting a vote. */
 async function verifyTurnstile(token, ip, env) {
@@ -174,6 +179,14 @@ export async function onRequestPost({ request, env }) {
     return new Response(JSON.stringify(result, null, 2), { headers: JSON_HEADERS });
   }
 
+  if (votingClosed()) {
+    return new Response(JSON.stringify({
+      error: "paused",
+      closed: true,
+      closes_at: VOTING_CLOSES_AT,
+    }), { status: 503, headers: JSON_HEADERS });
+  }
+
   if (!body || typeof body !== "object") {
     return new Response(JSON.stringify({ error: "bad-json" }), { status: 400, headers: JSON_HEADERS });
   }
@@ -234,7 +247,12 @@ export async function onRequestGet({ request, env }) {
   const url = new URL(request.url);
 
   if (url.searchParams.get("status") === "1") {
-    return new Response(JSON.stringify({ paused: false }), { headers: JSON_HEADERS });
+    const closed = votingClosed();
+    return new Response(JSON.stringify({
+      paused: closed,
+      closed,
+      closes_at: VOTING_CLOSES_AT,
+    }), { headers: JSON_HEADERS });
   }
 
   // Collect all vote records.
