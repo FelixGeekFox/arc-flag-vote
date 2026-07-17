@@ -550,6 +550,57 @@
     }).join("");
   }
 
+  async function renderWinner() {
+    const card = $("#winner-card");
+    const tallies = await VoteStore.tallies();
+
+    const rows = approvedEntries().map((e) => {
+      const t = tallies[e.entry_id] || { human: 0, ai: 0 };
+      return { entry: e, human: t.human, ai: t.ai, total: t.human + t.ai };
+    }).filter((r) => r.total > 0);
+
+    rows.sort((a, b) => b.total - a.total ||
+      a.entry.entry_id.localeCompare(b.entry.entry_id, undefined, { numeric: true }));
+
+    if (!rows.length) {
+      card.innerHTML = `<p class="empty-note">Winner details will appear here once results are available.</p>`;
+      return;
+    }
+
+    const winner = rows[0];
+    const e = winner.entry;
+    const tied = rows.filter((r) => r.total === winner.total);
+    const tieNote = tied.length > 1
+      ? `<p class="winner-note">Note: ${tied.length} entries are tied on combined votes. Showing the lowest entry number first.</p>`
+      : "";
+
+    card.innerHTML = `
+      <article class="winner-layout">
+        <div class="winner-image">${flagImageHtml(e, { eager: true })}</div>
+        <div class="winner-copy">
+          <span class="entry-badge">ENTRY #${esc(e.entry_id)}</span>
+          <h3>${e.design_title ? esc(e.design_title) : `Entry #${esc(e.entry_id)}`}</h3>
+          <p class="winner-designer">
+            Designed by
+            ${e.reddit_profile_url
+              ? `<a href="${esc(safeUrl(e.reddit_profile_url))}" target="_blank" rel="noopener noreferrer">${esc(e.reddit_username || "Unknown designer")}</a>`
+              : esc(e.reddit_username || "Unknown designer")}
+          </p>
+          <p class="result-counts">
+            Human votes: <strong>${winner.human}</strong> ·
+            AI votes: <strong>${winner.ai}</strong> ·
+            Combined: <strong>${winner.total}</strong>
+          </p>
+          ${tieNote}
+          <div class="winner-description">
+            <h4>Designer description</h4>
+            <p>${e.flag_details ? esc(e.flag_details) : "No explanation provided."}</p>
+          </div>
+          ${e.submitted_post_url ? `<a class="btn btn-ghost" href="${esc(safeUrl(e.submitted_post_url))}" target="_blank" rel="noopener noreferrer">View submitted post</a>` : ""}
+        </div>
+      </article>`;
+  }
+
   /* ------------------------------------------------------------------ */
   /* Modals (shared plumbing: focus trap, Escape, backdrop click)        */
   /* ------------------------------------------------------------------ */
@@ -896,7 +947,7 @@
   /* Routing                                                             */
   /* ------------------------------------------------------------------ */
 
-  const ROUTES = { "": "home", "/": "home", "/results": "results", "/thanks": "thanks", "/faq": "faq", "/admin": "admin" };
+  const ROUTES = { "": "home", "/": "home", "/results": "results", "/winner": "winner", "/thanks": "thanks", "/faq": "faq", "/admin": "admin" };
 
   function route() {
     const raw = location.hash.replace(/^#/, "");
@@ -922,12 +973,14 @@
       const isCurrent =
         (name === "home" && a.dataset.nav === "home") ||
         (name === "results" && a.dataset.nav === "results") ||
+        (name === "winner" && a.dataset.nav === "winner") ||
         (name === "faq" && a.dataset.nav === "faq");
       if (isCurrent) a.setAttribute("aria-current", "page");
       else a.removeAttribute("aria-current");
     });
 
     if (name === "results") renderResults();
+    if (name === "winner") renderWinner();
     if (name === "admin") renderAdmin();
   }
 
@@ -936,6 +989,7 @@
     renderGallery();
     renderVoteOptions();
     if (!$("#view-results").hidden) renderResults();
+    if (!$("#view-winner").hidden) renderWinner();
   }
 
   /* ------------------------------------------------------------------ */

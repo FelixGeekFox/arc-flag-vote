@@ -470,6 +470,55 @@ code {
 
 .results-actions { display: flex; gap: 0.75rem; margin-top: 2rem; flex-wrap: wrap; }
 
+/* ============ Winner ============ */
+
+.winner-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: clamp(1rem, 3vw, 2rem);
+}
+
+.winner-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 1.05fr) minmax(280px, 0.95fr);
+  gap: clamp(1.25rem, 4vw, 2.5rem);
+  align-items: start;
+}
+
+.winner-image {
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--teal-tint);
+  border: 1px solid var(--line);
+}
+.winner-image img { width: 100%; height: auto; display: block; }
+
+.winner-copy h3 {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  margin: 0.7rem 0 0.4rem;
+}
+
+.winner-designer { color: var(--muted); margin: 0 0 0.75rem; }
+.winner-designer a { color: var(--teal-dark); font-weight: 600; }
+.winner-note {
+  background: var(--teal-tint);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  padding: 0.75rem 0.9rem;
+}
+
+.winner-description {
+  margin: 1.25rem 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+.winner-description h4 { margin: 0 0 0.55rem; font-family: var(--font-display); }
+.winner-description p { white-space: pre-line; }
+
 /* ============ Thank you ============ */
 
 .thanks { text-align: center; padding-block: 5rem; }
@@ -631,6 +680,7 @@ code {
 @media (max-width: 640px) {
   .header-inner { flex-wrap: wrap; }
   .site-nav { gap: 0.9rem; }
+  .winner-layout { grid-template-columns: 1fr; }
   .modal { padding: 1.1rem; }
   .modal-footer { flex-direction: column; }
   .modal-footer .btn { width: 100%; }
