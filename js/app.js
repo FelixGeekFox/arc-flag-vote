@@ -1047,6 +1047,7 @@
     // Header nav current-page indicator.
     $$(".site-nav a").forEach((a) => {
       const isCurrent =
+        (name === "home" && a.dataset.nav === "home") ||
         (name === "designs" && a.dataset.nav === "designs") ||
         (name === "results" && a.dataset.nav === "results") ||
         (name === "winner" && a.dataset.nav === "winner") ||
