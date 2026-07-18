@@ -1023,14 +1023,14 @@
   /* Routing                                                             */
   /* ------------------------------------------------------------------ */
 
-  const ROUTES = { "": "home", "/": "home", "/results": "results", "/winner": "winner", "/assets": "assets", "/gallery": "gallery", "/license": "license", "/thanks": "thanks", "/faq": "faq", "/admin": "admin" };
+  const ROUTES = { "": "home", "/": "home", "/winner": "winner", "/assets": "assets", "/gallery": "gallery", "/license": "license", "/designs": "designs", "/results": "results", "/thanks": "thanks", "/faq": "faq", "/admin": "admin" };
 
   function route() {
     const raw = location.hash.replace(/^#/, "");
 
-    // In-page anchors (#faq, #gallery-section) live on the home view.
+    // In-page anchors for the designs grid live on the designs view.
     if (raw && !raw.startsWith("/")) {
-      showView("home");
+      showView(raw === "gallery-section" ? "designs" : "home");
       const target = document.getElementById(raw);
       if (target) target.scrollIntoView({ block: "start" });
       return;
@@ -1047,7 +1047,7 @@
     // Header nav current-page indicator.
     $$(".site-nav a").forEach((a) => {
       const isCurrent =
-        (name === "home" && a.dataset.nav === "home") ||
+        (name === "designs" && a.dataset.nav === "designs") ||
         (name === "results" && a.dataset.nav === "results") ||
         (name === "winner" && a.dataset.nav === "winner") ||
         (name === "assets" && a.dataset.nav === "assets") ||
@@ -1058,6 +1058,7 @@
       else a.removeAttribute("aria-current");
     });
 
+    if (name === "designs") renderGallery();
     if (name === "results") renderResults();
     if (name === "winner") renderWinner();
     if (name === "assets") renderAssets();
