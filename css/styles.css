@@ -557,8 +557,16 @@ code {
   flex-direction: column;
   justify-content: space-between;
   gap: 1rem;
-  padding: 1.1rem;
 }
+.asset-download-card > div:not(.asset-download-preview),
+.asset-download-card > .btn { margin-inline: 1.1rem; }
+.asset-download-card > .btn { margin-bottom: 1.1rem; }
+.asset-download-preview {
+  background: var(--teal-tint);
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+}
+.asset-download-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .asset-download-card h4,
 .asset-gallery-card h4 { font-family: var(--font-display); margin: 0 0 0.4rem; }
 .asset-download-card p,

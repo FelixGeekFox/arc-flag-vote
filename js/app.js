@@ -626,6 +626,9 @@
       const url = safeUrl(asset.url) || esc(asset.url || "");
       return `
         <article class="asset-download-card">
+          <div class="asset-download-preview">
+            ${url ? `<img src="${esc(url)}" alt="${esc(asset.title || "Flag asset")}" loading="lazy" />` : `<div class="img-missing">Image unavailable</div>`}
+          </div>
           <div>
             <h4>${esc(asset.title || "Flag asset")}</h4>
             <p>${esc(asset.description || "")}</p>
