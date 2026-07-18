@@ -108,56 +108,6 @@
         <p id="gallery-empty" class="empty-note" hidden>No designs match that search. Try a different keyword or clear the search box.</p>
       </div>
 
-      <!-- Voting form -->
-      <div class="wrap section" id="vote">
-        <div class="vote-panel">
-          <div class="section-head">
-            <h2>Voting closed</h2>
-            <p class="section-sub">The voting period has ended. The winner and final results are now available.</p>
-          </div>
-
-          <form id="vote-form" novalidate>
-            <div class="vote-grid">
-              <label class="field">
-                <span class="field-label">Human vote <span class="req" aria-hidden="true">*</span></span>
-                <select id="human-vote" required aria-describedby="human-vote-error">
-                  <option value="">Choose a design…</option>
-                </select>
-                <span class="field-error" id="human-vote-error" role="alert" hidden>Please choose a design for your Human vote.</span>
-              </label>
-
-              <label class="field">
-                <span class="field-label">AI vote <span class="optional">(optional)</span></span>
-                <select id="ai-vote" aria-describedby="ai-vote-help">
-                  <option value="">Choose a design…</option>
-                </select>
-                <span class="field-help" id="ai-vote-help">
-                  Your AI vote can come from one AI companion or from a consensus between multiple
-                  AI companions, if that applies to you.
-                </span>
-              </label>
-            </div>
-
-            <p class="fairness-note">To help keep the vote fair, duplicate submissions may be filtered or removed.</p>
-
-            <div class="turnstile-check">
-              <p class="field-help">Please complete the security check before submitting your vote.</p>
-              <div id="turnstile-widget" class="turnstile-widget"></div>
-              <p id="turnstile-error" class="field-error turnstile-error" role="alert" hidden>Security check failed. Please try again.</p>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Submit vote</button>
-            <p id="already-voted" class="already-voted" role="status" hidden>
-              It looks like a vote has already been submitted from this browser. If that wasn't you,
-              or something went wrong, please contact the moderators.
-            </p>
-            <p id="vote-paused" class="already-voted" role="status" hidden>
-              Voting Closed, winner will be announced soon
-            </p>
-          </form>
-        </div>
-      </div>
-
     </section>
 
     <!-- ============ VIEW: RESULTS ============ -->

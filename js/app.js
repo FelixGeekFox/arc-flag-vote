@@ -510,6 +510,7 @@
   /* ------------------------------------------------------------------ */
 
   function renderVoteOptions() {
+    if (!$("#human-vote") || !$("#ai-vote")) return;
     const opts = ['<option value="">Choose a design…</option>']
       .concat(
         approvedEntries()
@@ -1027,7 +1028,7 @@
   function route() {
     const raw = location.hash.replace(/^#/, "");
 
-    // In-page anchors (#vote, #faq, #gallery-section) live on the home view.
+    // In-page anchors (#faq, #gallery-section) live on the home view.
     if (raw && !raw.startsWith("/")) {
       showView("home");
       const target = document.getElementById(raw);
@@ -1148,8 +1149,8 @@
       });
     });
 
-    // Voting
-    $("#vote-form").addEventListener("submit", handleVoteSubmit);
+    // Voting form has been retired now that the competition is closed.
+    if ($("#vote-form")) $("#vote-form").addEventListener("submit", handleVoteSubmit);
 
     // Admin
     $("#csv-import").addEventListener("click", handleCsvImport);
@@ -1173,11 +1174,11 @@
     renderVoteOptions();
     wireEvents();
     const voteStatus = await refreshVotingStatus();
-    if (!voteStatus.paused) initTurnstile();
+    if ($("#vote-form") && !voteStatus.paused) initTurnstile();
     route();
 
     // Show the friendly note up front only for this reset epoch.
-    if (!voteStatus.paused && hasVotedLocally()) $("#already-voted").hidden = false;
+    if ($("#already-voted") && !voteStatus.paused && hasVotedLocally()) $("#already-voted").hidden = false;
   }
 
   init();
