@@ -510,6 +510,37 @@ code {
 
 /* ============ FAQ ============ */
 
+.participating-subreddits {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.2rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+.participating-subreddits h3 {
+  font-family: var(--font-display);
+  margin: 0 0 0.35rem;
+}
+.participating-subreddits p { color: var(--muted); margin-top: 0; }
+.subreddit-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.subreddit-list a {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(0, 111, 115, 0.28);
+  border-radius: 999px;
+  background: var(--teal-tint);
+  color: var(--teal-dark);
+  font-weight: 700;
+  text-decoration: none;
+  padding: 0.35rem 0.75rem;
+}
+.subreddit-list a:hover { border-color: var(--teal); color: var(--teal-dark); }
+
 .faq-item {
   background: var(--card);
   border: 1px solid var(--line);
