@@ -2,8 +2,8 @@
     "version":  "2026-07-18-gallery-12",
     "downloads":  [
                       {
-                          "title":  "Downloadable flag image 1",
-                          "description":  "High-resolution community flag image for posts, banners, edits, and remixing.",
+                          "title":  "Main flag image",
+                          "description":  "Primary high-resolution community flag image for posts, banners, edits, and remixing.",
                           "url":  "images/assets/arc-flag-download-01.png",
                           "format":  "PNG",
                           "size_label":  "High resolution"
@@ -24,7 +24,7 @@
                       },
                       {
                           "title":  "Downloadable flag image 4",
-                          "description":  "High-resolution community flag image for posts, banners, edits, and remixing.",
+                          "description":  "Alternate high-resolution community flag image for posts, banners, edits, and remixing.",
                           "url":  "images/assets/arc-flag-download-04.png",
                           "format":  "PNG",
                           "size_label":  "High resolution"
