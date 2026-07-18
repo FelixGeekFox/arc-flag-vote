@@ -40,6 +40,9 @@
     // Where the published entries live.
     ENTRIES_URL: "data/entries.json",
     ASSETS_URL: "data/flag-assets.json",
+    WINNER_ENTRY_ID: "15",
+    WINNER_IMAGE_URL: "images/assets/arc-flag-download-01.png",
+    WINNER_FALLBACK_COUNTS: { human: 24, ai: 21 },
 
     // localStorage keys
     LS_DRAFT: "arcflag:entries-draft",   // admin working copy
@@ -304,6 +307,16 @@
     return state.flagAssets;
   }
 
+  async function loadPublishedEntries() {
+    try {
+      const res = await fetch(CONFIG.ENTRIES_URL, { cache: "no-store" });
+      if (!res.ok) throw new Error(res.statusText);
+      return await res.json();
+    } catch {
+      return approvedEntries();
+    }
+  }
+
   function saveDraft() {
     localStorage.setItem(CONFIG.LS_DRAFT, JSON.stringify(state.entries));
   }
@@ -566,9 +579,11 @@
 
   async function renderWinner() {
     const card = $("#winner-card");
+    const publishedEntries = await loadPublishedEntries();
     const tallies = await VoteStore.tallies();
 
-    const rows = approvedEntries().map((e) => {
+    const entries = Array.isArray(publishedEntries) ? publishedEntries.filter((e) => e.approved) : approvedEntries();
+    const rows = entries.map((e) => {
       const t = tallies[e.entry_id] || { human: 0, ai: 0 };
       return { entry: e, human: t.human, ai: t.ai, total: t.human + t.ai };
     }).filter((r) => r.total > 0);
@@ -576,12 +591,19 @@
     rows.sort((a, b) => b.total - a.total ||
       a.entry.entry_id.localeCompare(b.entry.entry_id, undefined, { numeric: true }));
 
-    if (!rows.length) {
+    const configuredWinner = entries.find((e) => String(e.entry_id) === CONFIG.WINNER_ENTRY_ID);
+    if (!rows.length && !configuredWinner) {
       card.innerHTML = `<p class="empty-note">Winner details will appear here once results are available.</p>`;
       return;
     }
 
-    const winner = rows[0];
+    const winner = rows.find((r) => String(r.entry.entry_id) === CONFIG.WINNER_ENTRY_ID) ||
+      (configuredWinner ? {
+        entry: configuredWinner,
+        human: CONFIG.WINNER_FALLBACK_COUNTS.human,
+        ai: CONFIG.WINNER_FALLBACK_COUNTS.ai,
+        total: CONFIG.WINNER_FALLBACK_COUNTS.human + CONFIG.WINNER_FALLBACK_COUNTS.ai,
+      } : rows[0]);
     const e = winner.entry;
     const tied = rows.filter((r) => r.total === winner.total);
     const tieNote = tied.length > 1
@@ -590,7 +612,10 @@
 
     card.innerHTML = `
       <article class="winner-layout">
-        <div class="winner-image">${flagImageHtml(e, { eager: true })}</div>
+        <div class="winner-image">
+          <img src="${esc(CONFIG.WINNER_IMAGE_URL || e.image_filename_or_url)}" alt="${esc(flagAlt(e))}" loading="eager"
+            onerror="this.outerHTML='<div class=&quot;img-missing&quot;>Image unavailable</div>'" />
+        </div>
         <div class="winner-copy">
           <span class="entry-badge">ENTRY #${esc(e.entry_id)}</span>
           <h3>${e.design_title ? esc(e.design_title) : `Entry #${esc(e.entry_id)}`}</h3>
