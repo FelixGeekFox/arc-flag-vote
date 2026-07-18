@@ -11,9 +11,8 @@
    Vote storage:
      - DEMO mode (default): votes are stored in this browser's localStorage so
        the whole site works on GitHub Pages with zero backend.
-     - API mode: point VOTE_API_URL at a serverless endpoint (see
-       functions/api/vote.js for a Cloudflare Pages example). The endpoint is
-       responsible for hashed-IP duplicate limiting and persistent storage.
+     - Final results mode: voting is closed and results are loaded from
+       data/final-results.json.
    ========================================================================== */
 
 (() => {
@@ -24,9 +23,9 @@
   /* ------------------------------------------------------------------ */
 
   const CONFIG = {
-    // Set to your deployed endpoint (e.g. "/api/vote") to enable API mode.
-    // Leave as null to run in demo/localStorage mode.
-    VOTE_API_URL: "/api/vote",
+    // Voting is closed. The live vote API has been retired.
+    VOTE_API_URL: null,
+    FINAL_RESULTS_URL: "data/final-results.json",
 
     // Cloudflare Turnstile public site key. The private secret key belongs in
     // the Cloudflare Pages TURNSTILE_SECRET_KEY environment variable.
@@ -328,37 +327,28 @@
   const VoteStore = {
     /** Submit a vote. Returns { ok, duplicate } */
     async submit(vote) {
-      if (CONFIG.VOTE_API_URL) {
-        // API mode — the server enforces hashed-IP duplicate limiting.
-        const res = await fetch(CONFIG.VOTE_API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(vote),
-        });
-        if (res.status === 409) return { ok: false, duplicate: true };
-        if (res.status === 503) return { ok: false, paused: true };
-        if (!res.ok) throw new Error("Vote submission failed.");
-        return { ok: true, duplicate: false };
-      }
-
-      // Demo mode — append to localStorage.
-      const votes = VoteStore._readLocal();
-      votes.push({ ...vote, submitted_at: new Date().toISOString() });
-      localStorage.setItem(CONFIG.LS_VOTES, JSON.stringify(votes));
-      return { ok: true, duplicate: false };
+      return { ok: false, duplicate: false, paused: true };
     },
 
     async status() {
-      if (!CONFIG.VOTE_API_URL) return { paused: false };
+      if (!CONFIG.VOTE_API_URL) return { paused: true, closed: true };
       try {
         const res = await fetch(`${CONFIG.VOTE_API_URL}?status=1`, { cache: "no-store" });
         if (res.ok) return await res.json();
-      } catch { /* default to open so static preview still works */ }
-      return { paused: false };
+      } catch { /* keep voting closed if status cannot be checked */ }
+      return { paused: true, closed: true };
     },
 
     /** Tallies: { [entry_id]: { human, ai } } */
     async tallies() {
+      try {
+        const res = await fetch(CONFIG.FINAL_RESULTS_URL, { cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.tallies) return data.tallies;
+        }
+      } catch { /* fall through to legacy sources */ }
+
       if (CONFIG.VOTE_API_URL) {
         try {
           const res = await fetch(`${CONFIG.VOTE_API_URL}?results=1`, { cache: "no-store" });
