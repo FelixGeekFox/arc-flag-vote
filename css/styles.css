@@ -519,6 +519,67 @@ code {
 .winner-description h4 { margin: 0 0 0.55rem; font-family: var(--font-display); }
 .winner-description p { white-space: pre-line; }
 
+/* ============ Assets ============ */
+
+.assets-intro {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+.assets-intro p { margin: 0; color: var(--muted); }
+
+.assets-heading {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  margin: 1.75rem 0 0.9rem;
+}
+
+.asset-downloads {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.asset-download-card,
+.asset-gallery-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.asset-download-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem;
+}
+.asset-download-card h4,
+.asset-gallery-card h4 { font-family: var(--font-display); margin: 0 0 0.4rem; }
+.asset-download-card p,
+.asset-gallery-card p { color: var(--muted); }
+.asset-meta { font-size: 0.85rem; font-weight: 600; color: var(--teal-dark) !important; }
+
+.asset-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.asset-gallery-image {
+  background: var(--teal-tint);
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+}
+.asset-gallery-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.asset-gallery-copy { padding: 1rem; }
+.asset-gallery-copy a { color: var(--teal-dark); font-weight: 600; }
+
 /* ============ Thank you ============ */
 
 .thanks { text-align: center; padding-block: 5rem; }

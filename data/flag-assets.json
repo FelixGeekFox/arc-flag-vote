@@ -1,0 +1,26 @@
+﻿{
+  "downloads": [
+    {
+      "title": "Official flat flag — PNG",
+      "description": "High-resolution flat raster version for posts, banners, and image editing.",
+      "url": "images/assets/arc-overlap-flag-3000x2000.png",
+      "format": "PNG",
+      "size_label": "3000 × 2000"
+    },
+    {
+      "title": "Official flat flag — SVG",
+      "description": "Scalable vector version for print, web, remixing, and high-resolution export.",
+      "url": "images/assets/arc-overlap-flag.svg",
+      "format": "SVG",
+      "size_label": "Vector · 3:2"
+    },
+    {
+      "title": "Overlap symbol — SVG",
+      "description": "Standalone transparent symbol for icons, overlays, stickers, and derived artwork.",
+      "url": "images/assets/arc-overlap-symbol.svg",
+      "format": "SVG",
+      "size_label": "Vector · transparent"
+    }
+  ],
+  "gallery": []
+}

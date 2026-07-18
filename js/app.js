@@ -39,6 +39,7 @@
 
     // Where the published entries live.
     ENTRIES_URL: "data/entries.json",
+    ASSETS_URL: "data/flag-assets.json",
 
     // localStorage keys
     LS_DRAFT: "arcflag:entries-draft",   // admin working copy
@@ -113,6 +114,7 @@
     lastFocus: null,    // element to restore focus to when a modal closes
     turnstileWidgetId: null,
     turnstileToken: "",
+    flagAssets: null,
   };
 
   const $ = (sel, root = document) => root.querySelector(sel);
@@ -288,6 +290,18 @@
       // 3. Fallback sample so the site still demos when opened from disk.
       state.entries = SAMPLE_ENTRIES;
     }
+  }
+
+  async function loadFlagAssets() {
+    if (state.flagAssets) return state.flagAssets;
+    try {
+      const res = await fetch(CONFIG.ASSETS_URL, { cache: "no-store" });
+      if (!res.ok) throw new Error(res.statusText);
+      state.flagAssets = await res.json();
+    } catch {
+      state.flagAssets = { downloads: [], gallery: [] };
+    }
+    return state.flagAssets;
   }
 
   function saveDraft() {
@@ -599,6 +613,44 @@
           ${e.submitted_post_url ? `<a class="btn btn-ghost" href="${esc(safeUrl(e.submitted_post_url))}" target="_blank" rel="noopener noreferrer">View submitted post</a>` : ""}
         </div>
       </article>`;
+  }
+
+  async function renderAssets() {
+    const downloadsEl = $("#asset-downloads");
+    const galleryEl = $("#asset-gallery");
+    const assets = await loadFlagAssets();
+    const downloads = Array.isArray(assets.downloads) ? assets.downloads : [];
+    const gallery = Array.isArray(assets.gallery) ? assets.gallery : [];
+
+    downloadsEl.innerHTML = downloads.length ? downloads.map((asset) => {
+      const url = safeUrl(asset.url) || esc(asset.url || "");
+      return `
+        <article class="asset-download-card">
+          <div>
+            <h4>${esc(asset.title || "Flag asset")}</h4>
+            <p>${esc(asset.description || "")}</p>
+            <p class="asset-meta">${esc(asset.format || "Download")} · ${esc(asset.size_label || "")}</p>
+          </div>
+          <a class="btn btn-primary" href="${esc(url)}" download>Download</a>
+        </article>`;
+    }).join("") : `<p class="empty-note">Downloads will appear here soon.</p>`;
+
+    galleryEl.innerHTML = gallery.length ? gallery.map((item) => {
+      const imageUrl = safeUrl(item.image_url) || esc(item.image_url || "");
+      const sourceUrl = safeUrl(item.source_url);
+      return `
+        <article class="asset-gallery-card">
+          <div class="asset-gallery-image">
+            ${imageUrl ? `<img src="${esc(imageUrl)}" alt="${esc(item.alt || item.title || "Community flag image")}" loading="lazy" />` : `<div class="img-missing">Image unavailable</div>`}
+          </div>
+          <div class="asset-gallery-copy">
+            <h4>${esc(item.title || "Community image")}</h4>
+            ${item.creator ? `<p class="asset-meta">By ${esc(item.creator)}</p>` : ""}
+            ${item.description ? `<p>${esc(item.description)}</p>` : ""}
+            ${sourceUrl ? `<a href="${esc(sourceUrl)}" target="_blank" rel="noopener noreferrer">View source</a>` : ""}
+          </div>
+        </article>`;
+    }).join("") : `<p class="empty-note">Community images will appear here once they are added.</p>`;
   }
 
   /* ------------------------------------------------------------------ */
@@ -947,7 +999,7 @@
   /* Routing                                                             */
   /* ------------------------------------------------------------------ */
 
-  const ROUTES = { "": "home", "/": "home", "/results": "results", "/winner": "winner", "/thanks": "thanks", "/faq": "faq", "/admin": "admin" };
+  const ROUTES = { "": "home", "/": "home", "/results": "results", "/winner": "winner", "/assets": "assets", "/thanks": "thanks", "/faq": "faq", "/admin": "admin" };
 
   function route() {
     const raw = location.hash.replace(/^#/, "");
@@ -974,6 +1026,7 @@
         (name === "home" && a.dataset.nav === "home") ||
         (name === "results" && a.dataset.nav === "results") ||
         (name === "winner" && a.dataset.nav === "winner") ||
+        (name === "assets" && a.dataset.nav === "assets") ||
         (name === "faq" && a.dataset.nav === "faq");
       if (isCurrent) a.setAttribute("aria-current", "page");
       else a.removeAttribute("aria-current");
@@ -981,6 +1034,7 @@
 
     if (name === "results") renderResults();
     if (name === "winner") renderWinner();
+    if (name === "assets") renderAssets();
     if (name === "admin") renderAdmin();
   }
 
@@ -990,6 +1044,7 @@
     renderVoteOptions();
     if (!$("#view-results").hidden) renderResults();
     if (!$("#view-winner").hidden) renderWinner();
+    if (!$("#view-assets").hidden) renderAssets();
   }
 
   /* ------------------------------------------------------------------ */
