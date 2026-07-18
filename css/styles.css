@@ -8,8 +8,8 @@
   --card: #FFFFFF;         /* card surfaces */
   --ink: #1B2A41;          /* dark navy text */
   --muted: #5C6B80;        /* secondary text */
-  --teal: #0E8C8C;         /* primary accent */
-  --teal-dark: #0A6B6B;    /* hover accent */
+  --teal: #006F73;         /* primary accent, darkened for contrast on white */
+  --teal-dark: #004F52;    /* hover/text accent, darkened for contrast on white */
   --teal-tint: #E4F2F1;    /* soft teal wash */
   --line: #E5E0D6;         /* hairline borders on warm paper */
   --danger: #B4453A;
@@ -433,7 +433,7 @@ code {
   letter-spacing: 0.08em;
   color: var(--teal-dark);
   background: var(--teal-tint);
-  border: 1px solid rgba(14, 140, 140, 0.25);
+  border: 1px solid rgba(0, 111, 115, 0.28);
   border-radius: 6px;
   padding: 0.15rem 0.55rem;
   /* chip-pin flourish */
