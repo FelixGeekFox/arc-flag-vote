@@ -1002,7 +1002,7 @@
   /* Routing                                                             */
   /* ------------------------------------------------------------------ */
 
-  const ROUTES = { "": "home", "/": "home", "/results": "results", "/winner": "winner", "/assets": "assets", "/thanks": "thanks", "/faq": "faq", "/admin": "admin" };
+  const ROUTES = { "": "home", "/": "home", "/results": "results", "/winner": "winner", "/assets": "assets", "/license": "license", "/thanks": "thanks", "/faq": "faq", "/admin": "admin" };
 
   function route() {
     const raw = location.hash.replace(/^#/, "");
@@ -1030,6 +1030,7 @@
         (name === "results" && a.dataset.nav === "results") ||
         (name === "winner" && a.dataset.nav === "winner") ||
         (name === "assets" && a.dataset.nav === "assets") ||
+        (name === "license" && a.dataset.nav === "license") ||
         (name === "faq" && a.dataset.nav === "faq");
       if (isCurrent) a.setAttribute("aria-current", "page");
       else a.removeAttribute("aria-current");
