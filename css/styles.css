@@ -232,7 +232,7 @@ code {
   padding-block: clamp(4rem, 8vw, 6.5rem);
 }
 .home-hero-copy { max-width: 680px; }
-.home-page .eyebrow { color: #004F52; }
+.home-page .eyebrow { color: #003B3E; }
 .home-page h1,
 .home-page h2 { color: #F7FBFF; }
 .home-page .hero-tagline { color: #BFEFEA; }
@@ -283,7 +283,7 @@ code {
   box-shadow: 0 18px 42px rgba(0, 0, 0, 0.18);
   padding: clamp(1.25rem, 3vw, 2rem);
 }
-.home-card .eyebrow { color: #004F52; }
+.home-card .eyebrow { color: #003B3E; }
 .home-card-wide { grid-column: 1 / -1; }
 
 @media (max-width: 820px) {
@@ -321,6 +321,9 @@ code {
   border-color: var(--line);
 }
 .btn-ghost:hover { border-color: var(--teal); color: var(--teal-dark); }
+
+.home-page .btn-on-dark { color: #F7FBFF; border-color: rgba(247, 251, 255, 0.72); }
+.home-page .btn-on-dark:hover { color: #7CE8E0; border-color: #7CE8E0; }
 
 .btn-sm { padding: 0.45rem 1rem; font-size: 0.85rem; }
 
