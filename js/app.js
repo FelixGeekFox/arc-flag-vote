@@ -655,20 +655,21 @@
 
     galleryEl.innerHTML = gallery.length ? gallery.map((item) => {
       const imageUrl = safeUrl(item.image_url) || esc(item.image_url || "");
-      const sourceUrl = safeUrl(item.source_url);
       return `
-        <article class="asset-gallery-card">
-          <div class="asset-gallery-image">
+        <button type="button" class="asset-gallery-card" data-gallery-image="${esc(imageUrl)}" data-gallery-alt="${esc(item.alt || item.title || "Community flag image")}">
+          <span class="asset-gallery-image">
             ${imageUrl ? `<img src="${esc(imageUrl)}" alt="${esc(item.alt || item.title || "Community flag image")}" loading="lazy" />` : `<div class="img-missing">Image unavailable</div>`}
-          </div>
-          <div class="asset-gallery-copy">
-            <h4>${esc(item.title || "Community image")}</h4>
-            ${item.creator ? `<p class="asset-meta">By ${esc(item.creator)}</p>` : ""}
-            ${item.description ? `<p>${esc(item.description)}</p>` : ""}
-            ${sourceUrl ? `<a href="${esc(sourceUrl)}" target="_blank" rel="noopener noreferrer">View source</a>` : ""}
-          </div>
-        </article>`;
+          </span>
+        </button>`;
     }).join("") : `<p class="empty-note">Community images will appear here once they are added.</p>`;
+  }
+
+  function openAssetImage(src, alt) {
+    if (!src) return;
+    const img = $("#asset-image-full");
+    img.src = src;
+    img.alt = alt || "Community flag image";
+    openModal("#asset-image-backdrop");
   }
 
   /* ------------------------------------------------------------------ */
@@ -1113,6 +1114,23 @@
 
     // Modal close behaviour (shared)
     ["#details-backdrop", "#compare-backdrop"].forEach((id) => {
+      const backdrop = $(id);
+      backdrop.addEventListener("click", (e) => {
+        if (e.target === backdrop || e.target.closest("[data-close]")) closeModal(id);
+      });
+      backdrop.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeModal(id);
+        trapFocus(backdrop, e);
+      });
+    });
+
+    $("#asset-gallery").addEventListener("click", (e) => {
+      const button = e.target.closest("[data-gallery-image]");
+      if (!button) return;
+      openAssetImage(button.dataset.galleryImage, button.dataset.galleryAlt);
+    });
+
+    ["#asset-image-backdrop"].forEach((id) => {
       const backdrop = $(id);
       backdrop.addEventListener("click", (e) => {
         if (e.target === backdrop || e.target.closest("[data-close]")) closeModal(id);
