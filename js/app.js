@@ -632,10 +632,8 @@
 
   async function renderAssets() {
     const downloadsEl = $("#asset-downloads");
-    const galleryEl = $("#asset-gallery");
     const assets = await loadFlagAssets();
     const downloads = Array.isArray(assets.downloads) ? assets.downloads : [];
-    const gallery = Array.isArray(assets.gallery) ? assets.gallery : [];
 
     downloadsEl.innerHTML = downloads.length ? downloads.map((asset) => {
       const url = safeUrl(asset.url) || esc(asset.url || "");
@@ -652,6 +650,12 @@
           <a class="btn btn-primary" href="${esc(url)}" download>Download</a>
         </article>`;
     }).join("") : `<p class="empty-note">Downloads will appear here soon.</p>`;
+  }
+
+  async function renderCommunityGallery() {
+    const galleryEl = $("#asset-gallery");
+    const assets = await loadFlagAssets();
+    const gallery = Array.isArray(assets.gallery) ? assets.gallery : [];
 
     galleryEl.innerHTML = gallery.length ? gallery.map((item) => {
       const imageUrl = safeUrl(item.image_url) || esc(item.image_url || "");
@@ -1018,7 +1022,7 @@
   /* Routing                                                             */
   /* ------------------------------------------------------------------ */
 
-  const ROUTES = { "": "home", "/": "home", "/results": "results", "/winner": "winner", "/assets": "assets", "/license": "license", "/thanks": "thanks", "/faq": "faq", "/admin": "admin" };
+  const ROUTES = { "": "home", "/": "home", "/results": "results", "/winner": "winner", "/assets": "assets", "/gallery": "gallery", "/license": "license", "/thanks": "thanks", "/faq": "faq", "/admin": "admin" };
 
   function route() {
     const raw = location.hash.replace(/^#/, "");
@@ -1046,6 +1050,7 @@
         (name === "results" && a.dataset.nav === "results") ||
         (name === "winner" && a.dataset.nav === "winner") ||
         (name === "assets" && a.dataset.nav === "assets") ||
+        (name === "gallery" && a.dataset.nav === "gallery") ||
         (name === "license" && a.dataset.nav === "license") ||
         (name === "faq" && a.dataset.nav === "faq");
       if (isCurrent) a.setAttribute("aria-current", "page");
@@ -1055,6 +1060,7 @@
     if (name === "results") renderResults();
     if (name === "winner") renderWinner();
     if (name === "assets") renderAssets();
+    if (name === "gallery") renderCommunityGallery();
     if (name === "admin") renderAdmin();
   }
 
@@ -1065,6 +1071,7 @@
     if (!$("#view-results").hidden) renderResults();
     if (!$("#view-winner").hidden) renderWinner();
     if (!$("#view-assets").hidden) renderAssets();
+    if (!$("#view-gallery").hidden) renderCommunityGallery();
   }
 
   /* ------------------------------------------------------------------ */
