@@ -1023,7 +1023,7 @@
   /* Routing                                                             */
   /* ------------------------------------------------------------------ */
 
-  const ROUTES = { "": "home", "/": "home", "/winner": "winner", "/assets": "assets", "/gallery": "gallery", "/license": "license", "/designs": "designs", "/results": "results", "/thanks": "thanks", "/faq": "faq", "/admin": "admin" };
+  const ROUTES = { "": "home", "/": "home", "/winner": "winner", "/assets": "assets", "/merch": "merch", "/gallery": "gallery", "/license": "license", "/designs": "designs", "/results": "results", "/thanks": "thanks", "/faq": "faq", "/admin": "admin" };
 
   function route() {
     const raw = location.hash.replace(/^#/, "");
@@ -1052,6 +1052,7 @@
         (name === "results" && a.dataset.nav === "results") ||
         (name === "winner" && a.dataset.nav === "winner") ||
         (name === "assets" && a.dataset.nav === "assets") ||
+        (name === "merch" && a.dataset.nav === "merch") ||
         (name === "gallery" && a.dataset.nav === "gallery") ||
         (name === "license" && a.dataset.nav === "license") ||
         (name === "faq" && a.dataset.nav === "faq");
