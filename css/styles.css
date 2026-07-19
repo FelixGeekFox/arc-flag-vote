@@ -1002,3 +1002,238 @@ code {
   margin-top: 0.75rem;
 }
 
+
+
+/* ============ Mobile optimisation pass ============ */
+
+@media (max-width: 900px) {
+  .header-inner {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .site-nav {
+    width: 100%;
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+    padding: 0.15rem 0 0.45rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .site-nav a {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .compare-bar {
+    top: 104px;
+  }
+}
+
+@media (max-width: 720px) {
+  .wrap {
+    width: min(100% - 1.25rem, 1120px);
+  }
+
+  .section {
+    padding-block: 2.25rem 1.25rem;
+  }
+
+  .section-head {
+    margin-bottom: 1.15rem;
+  }
+
+  h1 { font-size: clamp(2.15rem, 12vw, 3rem); }
+  h2 { font-size: clamp(1.45rem, 8vw, 1.85rem); }
+
+  .home-hero-inner {
+    gap: 1.35rem;
+    padding-block: 2rem 2.5rem;
+  }
+
+  .home-hero-flag {
+    padding: 0.35rem;
+    border-radius: var(--radius);
+  }
+
+  .home-hero-flag img {
+    border-radius: var(--radius-sm);
+  }
+
+  .home-sections {
+    gap: 0.85rem;
+    padding-block: 1.5rem 2.5rem;
+  }
+
+  .home-card,
+  .participating-subreddits,
+  .faq-item,
+  .assets-intro,
+  .winner-card,
+  .license-panel,
+  .merch-hero-panel,
+  .admin-panel {
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+  }
+
+  .hero-actions,
+  .results-actions,
+  .license-actions,
+  .admin-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .toolbar {
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .field,
+  .field.grow {
+    min-width: 0;
+    width: 100%;
+    flex-basis: auto;
+  }
+
+  .card-grid,
+  .asset-downloads,
+  .asset-gallery,
+  .compare-body,
+  .admin-entry-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .compare-bar {
+    position: static;
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .compare-bar .btn {
+    width: 100%;
+  }
+
+  .flag-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .compare-check {
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  .result-row {
+    grid-template-columns: 1fr;
+  }
+
+  .result-thumb {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+  }
+
+  .result-meta {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .winner-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .merch-hero-panel {
+    align-items: stretch;
+  }
+
+  .merch-scroll {
+    grid-auto-columns: minmax(230px, 86%);
+    gap: 0.75rem;
+    margin-inline: -0.15rem;
+    padding-inline: 0.15rem;
+  }
+
+  .subreddit-list a {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .modal-backdrop {
+    align-items: start;
+    padding: 0.6rem;
+  }
+
+  .modal {
+    width: 100%;
+    max-height: calc(100vh - 1.2rem);
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+  }
+
+  .modal-image {
+    padding: 0.5rem;
+  }
+
+  .asset-image-full {
+    max-height: calc(100vh - 1rem);
+  }
+
+  .modal-close {
+    top: 0.45rem;
+    right: 0.45rem;
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .details-image {
+    margin-top: 1.8rem;
+  }
+
+  .site-footer {
+    margin-top: 1rem;
+    padding-block: 1.2rem 1.8rem;
+  }
+}
+
+@media (max-width: 420px) {
+  body {
+    font-size: 0.96rem;
+  }
+
+  .brand-text {
+    font-size: 0.98rem;
+  }
+
+  .site-nav {
+    gap: 0.85rem;
+  }
+
+  .site-nav a {
+    font-size: 0.92rem;
+  }
+
+  .eyebrow,
+  .entry-badge {
+    font-size: 0.7rem;
+  }
+
+  .home-quote {
+    font-size: 1.05rem;
+  }
+
+  .merch-scroll {
+    grid-auto-columns: minmax(210px, 88%);
+  }
+}
