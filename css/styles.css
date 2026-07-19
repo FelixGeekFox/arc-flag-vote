@@ -748,7 +748,7 @@ code {
   padding: clamp(1.25rem, 3vw, 2rem);
   margin-bottom: 1.25rem;
 }
-.merch-hero-panel h3 { margin-bottom: 0.35rem; }
+.merch-hero-panel h3 { margin: 0; }
 .merch-hero-panel p { color: var(--muted); margin: 0; }
 .merch-scroll {
   display: grid;
